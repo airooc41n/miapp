@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi App One-Page</title>
+    <!-- Nota: Para probar en local con un dominio como 'miapp.dev', configura tu archivo hosts (/etc/hosts en Unix o C:\Windows\System32\drivers\etc\hosts en Windows) agregando '127.0.0.1 miapp.dev' y usa un servidor local como 'http-server' de Node.js o Python's 'python -m http.server' para servir el archivo en http://miapp.dev:8080 o similar. Esto permite que history.pushState funcione sin problemas. Si abres directamente como file://, la navegación podría no actualizar la URL visiblemente, pero el contenido cambiará. -->
+    <style>
+        /* CSS para diseño moderno y responsive */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+            background-color: #f4f7fa;
+            color: #333;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background-color: #007bff;
+            color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .hamburger {
+            cursor: pointer;
+            font-size: 1.8em;
+        }
+
+        #menu {
+            position: fixed;
+            top: 0;
+            right: -60%;
+            width: 60%;
+            height: 100%;
+            background-color: #ffffff;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.2);
+            transition: right 0.5s ease-in-out; /* Suavizado el efecto */
+            z-index: 2000;
+            padding: 60px 20px 20px;
+            overflow-y: auto;
+        }
+
+        #menu.active {
+            right: 0;
+        }
+
+        #menu .close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 1.8em;
+            cursor: pointer;
+        }
+
+        #menu ul {
+            list-style: none;
+        }
+
+        #menu li {
+            margin: 15px 0;
+        }
+
+        #menu a {
+            text-decoration: none;
+            color: #333;
+            font-size: 1.2em;
+            display: block;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background 0.2s;
+        }
+
+        #menu a:hover {
+            background-color: #e9ecef;
+        }
+
+        #overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 1500;
+        }
+
+        #overlay.active {
+            display: block;
+        }
+
+        main {
+            flex: 1;
+            padding: 70px 20px 60px;
+            overflow-y: auto;
+        }
+
+        .page {
+            display: none;
+            text-align: center;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .page h1 {
+            margin-bottom: 20px;
+            color: #007bff;
+        }
+
+        footer {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 15px;
+            background-color: #007bff;
+            color: white;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        footer .icon {
+            cursor: pointer;
+            font-size: 1.5em;
+            margin: 0 10px;
+            transition: color 0.2s;
+        }
+
+        footer .icon:hover {
+            color: #ffd700;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            #menu {
+                width: 80%;
+                right: -80%;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            main {
+                max-width: 800px;
+                margin: 0 auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">Mi App</div>
+        <div class="hamburger">&#9776;</div>
+    </header>
+
+    <div id="menu">
+        <div class="close">&times;</div>
+        <ul>
+            <li><a href="?page=inicio">Inicio</a></li>
+            <li><a href="?page=pag1">Página 1</a></li>
+            <li><a href="?page=pag2">Página 2</a></li>
+            <li><a href="?page=pag3">Página 3</a></li>
+            <li><a href="?page=pag4">Página 4</a></li>
+        </ul>
+    </div>
+
+    <div id="overlay"></div>
+
+    <main>
+        <section id="inicio" class="page">
+            <h1>Inicio</h1>
+            <p>Contenido de la página de inicio.</p>
+        </section>
+        <section id="pag1" class="page">
+            <h1>Página 1</h1>
+            <p>Contenido de la Página 1.</p>
+        </section>
+        <section id="pag2" class="page">
+            <h1>Página 2</h1>
+            <p>Contenido de la Página 2.</p>
+        </section>
+        <section id="pag3" class="page">
+            <h1>Página 3</h1>
+            <p>Contenido de la Página 3.</p>
+        </section>
+        <section id="pag4" class="page">
+            <h1>Página 4</h1>
+            <p>Contenido de la Página 4.</p>
+        </section>
+    </main>
+
+    <footer>
+        <span class="icon home" title="Inicio" onclick="navigateTo('inicio')">&#127968;</span> <!-- Icono de home -->
+        <span>Mi App - 2026</span>
+        <span class="icon options" title="Opciones">&#8942;</span> <!-- Tres puntos verticales -->
+    </footer>
+
+    <script>
+        // JS para manejar el menú y las páginas de forma asíncrona
+        document.addEventListener('DOMContentLoaded', () => {
+            const hamburger = document.querySelector('.hamburger');
+            const menu = document.getElementById('menu');
+            const close = menu.querySelector('.close');
+            const overlay = document.getElementById('overlay');
+            const pages = document.querySelectorAll('.page');
+
+            // Función para abrir/cerrar menú
+            function toggleMenu() {
+                menu.classList.toggle('active');
+                overlay.classList.toggle('active');
+            }
+
+            hamburger.addEventListener('click', toggleMenu);
+            close.addEventListener('click', toggleMenu);
+            overlay.addEventListener('click', toggleMenu);
+
+            // Función para navegar a una página
+            window.navigateTo = function(page) {
+                history.pushState(null, '', `?page=${page}`);
+                loadPage();
+            };
+
+            // Manejar cambio de página vía URL param
+            function loadPage() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const page = urlParams.get('page') || 'inicio';
+                pages.forEach(p => p.classList.remove('active'));
+                const activePage = document.getElementById(page);
+                if (activePage) {
+                    activePage.classList.add('active');
+                } else {
+                    document.getElementById('inicio').classList.add('active');
+                    history.replaceState(null, '', '?page=inicio');
+                }
+            }
+
+            // Escuchar cambios en history para simular navegación asíncrona
+            window.addEventListener('popstate', loadPage);
+
+            // Cargar página inicial
+            loadPage();
+
+            // Manejar clicks en links del menú (simular navegación sin recarga)
+            menu.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const href = new URL(link.href);
+                    const page = href.searchParams.get('page');
+                    navigateTo(page);
+                    toggleMenu();
+                });
+            });
+        });
+    </script>
+</body>
+</html>
