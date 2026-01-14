@@ -1,10 +1,22 @@
 <!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Wine01</title>
+    
+
+  </head>
+    
+  <body>
+  <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi App One-Page</title>
+    <title>Pasaporte del Vino</title>
     <!-- Nota: Para probar en local con un dominio como 'miapp.dev', configura tu archivo hosts (/etc/hosts en Unix o C:\Windows\System32\drivers\etc\hosts en Windows) agregando '127.0.0.1 miapp.dev' y usa un servidor local como 'http-server' de Node.js o Python's 'python -m http.server' para servir el archivo en http://miapp.dev:8080 o similar. Esto permite que history.pushState funcione sin problemas. Si abres directamente como file://, la navegación podría no actualizar la URL visiblemente, pero el contenido cambiará. -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* CSS para diseño moderno y responsive */
         * {
@@ -28,7 +40,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 15px 20px;
-            background-color: #007bff;
+            background-color: #800020; /* Granate bonito */
             color: white;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             position: fixed;
@@ -127,7 +139,22 @@
 
         .page h1 {
             margin-bottom: 20px;
-            color: #007bff;
+            color: #800020; /* Granate bonito */
+        }
+
+        .page h2 {
+            margin-top: 20px;
+            color: #800020;
+        }
+
+        .page ul, .page ol {
+            text-align: left;
+            margin: 10px auto;
+            max-width: 800px;
+        }
+
+        .page p {
+            margin-bottom: 10px;
         }
 
         footer {
@@ -135,7 +162,7 @@
             justify-content: space-around;
             align-items: center;
             padding: 15px;
-            background-color: #007bff;
+            background-color: #800020; /* Granate bonito */
             color: white;
             position: fixed;
             width: 100%;
@@ -172,18 +199,16 @@
 </head>
 <body>
     <header>
-        <div class="logo">Mi App</div>
+        <div class="logo">Pasaporte del Vino</div>
         <div class="hamburger">&#9776;</div>
     </header>
 
     <div id="menu">
         <div class="close">&times;</div>
         <ul>
-            <li><a href="?page=inicio">Inicio</a></li>
-            <li><a href="?page=pag1">Página 1</a></li>
-            <li><a href="?page=pag2">Página 2</a></li>
-            <li><a href="?page=pag3">Página 3</a></li>
-            <li><a href="?page=pag4">Página 4</a></li>
+            <li><a href="?page=registrar">Registrar pasaporte</a></li>
+            <li><a href="?page=mipasaporte">Mi pasaporte</a></li>
+            <li><a href="?page=establecimientos">Establecimientos</a></li>
         </ul>
     </div>
 
@@ -192,30 +217,63 @@
     <main>
         <section id="inicio" class="page">
             <h1>Inicio</h1>
-            <p>Contenido de la página de inicio.</p>
+            <h2>Pasaporte del Vino - Provincia de Valladolid</h2>
+            <p><em>"Un viaje con sentido"</em></p>
+
+            <h2>Descripción</h2>
+            <p>El Pasaporte del Vino es una iniciativa turística para promover el enoturismo en las Rutas del Vino de la Provincia de Valladolid. Dirigido a apasionados del vino, permite descubrir experiencias turísticas en establecimientos adheridos. Se requiere completar un mínimo de 4 experiencias distintas para participar en beneficios y sorteos.</p>
+
+            <h2>Cómo Obtenerlo y Participar</h2>
+            <ol>
+                <li>Descarga la hoja de sellado del Pasaporte Turístico del Vino desde el PDF disponible o consíguela en establecimientos adheridos, Oficinas de Turismo o Centros Turísticos de la Provincia de Valladolid.</li>
+                <li>Visita establecimientos adheridos en las Rutas del Vino. Consulta su localización, horarios y listado filtrable por rutas en la página correspondiente.</li>
+                <li>Completa el pasaporte con al menos 4 sellos de experiencias distintas. Fotografía la página con datos personales, aceptación de política de privacidad y protección de datos.</li>
+                <li>Envía la fotografía por WhatsApp al 650 623 088 o por correo electrónico a turismo@dipvalladolid.es.</li>
+            </ol>
+
+            <h2>Beneficios</h2>
+            <ul>
+                <li>Lote gratis de productos de la marca "Alimentos de Valladolid, a gusto de todos".</li>
+                <li>Descuentos en entradas a Centros Turísticos provinciales.</li>
+                <li>Participación en sorteo de 4 experiencias de enoturismo para dos personas en las Rutas del Vino (sorteo en enero de 2026).</li>
+            </ul>
+
+            <h2>Términos y Condiciones</h2>
+            <ul>
+                <li>Deben cumplirse al menos 4 sellos distintos y correctos de establecimientos colaboradores.</li>
+                <li>Verificación de sellos correspondientes a la iniciativa; sellos idénticos en múltiples participaciones no válidos.</li>
+                <li>Participantes mayores de edad; un solo premio por titular.</li>
+                <li>Un sello puede usarse como comodín en ferias de turismo donde participe la Diputación de Valladolid.</li>
+                <li>Campaña finaliza el 30 de diciembre de 2025; pasaportes recibidos antes se incluyen en el sorteo.</li>
+                <li>En caso de irregularidades, el pasaporte se declara nulo sin derecho a premios.</li>
+            </ul>
+
+            <h2>Política de Privacidad y Protección de Datos</h2>
+            <p>Responsable: Diputación Provincial de Valladolid (Patronato de Turismo). Base jurídica: Interés público y consentimiento del interesado. Finalidad: Promoción de actividades turísticas vía web, medios de comunicación, correo y redes sociales. Destinatarios: Entidades para fines promocionales, incluyendo prensa y redes de turismo. Ejercicio de derechos: Contacto vía dpd@dipvalladolid.es con DNI, tipo de derecho y tratamiento asociado.</p>
+
+            <h2>Establecimientos Participantes</h2>
+            <p>Establecimientos adheridos en rutas como la del Vino de Cigales (ejemplos: Diez Drones, Fotokol, Carnicería Maruja, La Pequeña Bodega, Finca Museum, entre otros). Total de 183 resultados disponibles, incluyendo bodegas, tiendas y más. Listado filtrable por rutas en la página original.</p>
         </section>
-        <section id="pag1" class="page">
-            <h1>Página 1</h1>
-            <p>Contenido de la Página 1.</p>
+        <section id="registrar" class="page">
+            <h1>Registrar pasaporte</h1>
+            <p>Contenido para registrar el pasaporte.</p>
         </section>
-        <section id="pag2" class="page">
-            <h1>Página 2</h1>
-            <p>Contenido de la Página 2.</p>
+        <section id="mipasaporte" class="page">
+            <h1>Mi pasaporte</h1>
+            <p>Contenido para mi pasaporte.</p>
         </section>
-        <section id="pag3" class="page">
-            <h1>Página 3</h1>
-            <p>Contenido de la Página 3.</p>
-        </section>
-        <section id="pag4" class="page">
-            <h1>Página 4</h1>
-            <p>Contenido de la Página 4.</p>
+        <section id="establecimientos" class="page">
+            <h1>Establecimientos</h1>
+            <p>Contenido para establecimientos.</p>
         </section>
     </main>
 
     <footer>
-        <span class="icon home" title="Inicio" onclick="navigateTo('inicio')">&#127968;</span> <!-- Icono de home -->
-        <span>Mi App - 2026</span>
-        <span class="icon options" title="Opciones">&#8942;</span> <!-- Tres puntos verticales -->
+        <span class="icon home" title="Inicio" onclick="navigateTo('inicio')"><i class="fas fa-house"></i></span> <!-- Icono plano de home -->
+        <span class="icon export" title="Exportar DB"><i class="fas fa-file-export"></i></span>
+        <span>Pasaporte del Vino - 2026</span>
+        <span class="icon import" title="Importar DB"><i class="fas fa-file-import"></i></span>
+        <span class="icon options" title="Opciones"><i class="fas fa-ellipsis-v"></i></span> <!-- Tres puntos verticales -->
     </footer>
 
     <script>
@@ -276,4 +334,8 @@
         });
     </script>
 </body>
+</html>
+    
+  </body>
+  
 </html>
