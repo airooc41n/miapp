@@ -3,7 +3,7 @@
 
   <head>
     <meta charset="UTF-8">
-    <title>Wine01</title>
+    <title>Wine_dbp.0.2</title>
     
 
   </head>
@@ -157,6 +157,23 @@
             margin-bottom: 10px;
         }
 
+        .cta-button {
+            background-color: #28a745; /* Verde éxito para CTA */
+            color: white;
+            padding: 15px 30px;
+            font-size: 1.5em;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 20px auto;
+            display: block;
+            transition: background-color 0.2s;
+        }
+
+        .cta-button:hover {
+            background-color: #218838; /* Verde más oscuro en hover */
+        }
+
         footer {
             display: flex;
             justify-content: space-around;
@@ -217,6 +234,8 @@
     <main>
         <section id="inicio" class="page">
             <h1>Inicio</h1>
+            <button class="cta-button" onclick="navigateTo('registrar')">Obtener Pasaporte</button> <!-- CTA al principio -->
+
             <h2>Pasaporte del Vino - Provincia de Valladolid</h2>
             <p><em>"Un viaje con sentido"</em></p>
 
@@ -230,6 +249,8 @@
                 <li>Completa el pasaporte con al menos 4 sellos de experiencias distintas. Fotografía la página con datos personales, aceptación de política de privacidad y protección de datos.</li>
                 <li>Envía la fotografía por WhatsApp al 650 623 088 o por correo electrónico a turismo@dipvalladolid.es.</li>
             </ol>
+
+            <button class="cta-button" onclick="navigateTo('registrar')">Obtener Pasaporte</button> <!-- CTA al medio -->
 
             <h2>Beneficios</h2>
             <ul>
@@ -253,6 +274,8 @@
 
             <h2>Establecimientos Participantes</h2>
             <p>Establecimientos adheridos en rutas como la del Vino de Cigales (ejemplos: Diez Drones, Fotokol, Carnicería Maruja, La Pequeña Bodega, Finca Museum, entre otros). Total de 183 resultados disponibles, incluyendo bodegas, tiendas y más. Listado filtrable por rutas en la página original.</p>
+
+            <button class="cta-button" onclick="navigateTo('registrar')">Obtener Pasaporte</button> <!-- CTA al final -->
         </section>
         <section id="registrar" class="page">
             <h1>Registrar pasaporte</h1>
@@ -331,6 +354,258 @@
                     toggleMenu();
                 });
             });
+
+            // Implementación de la DB en localStorage
+            // Inicializar la DB si no existe
+            function initDB() {
+                const tables = ['Pasaporte', 'Establecimiento', 'Sello', 'Notificacion', 'Mensaje'];
+                tables.forEach(table => {
+                    if (!localStorage.getItem(table)) {
+                        localStorage.setItem(table, JSON.stringify([]));
+                    }
+                });
+            }
+
+            // Función genérica para obtener una tabla
+            function getTable(tableName) {
+                return JSON.parse(localStorage.getItem(tableName) || '[]');
+            }
+
+            // Función genérica para guardar una tabla
+            function saveTable(tableName, data) {
+                localStorage.setItem(tableName, JSON.stringify(data));
+            }
+
+            // Funciones para Pasaporte
+            function addPasaporte(data) {
+                let pasaportes = getTable('Pasaporte');
+                const newId = pasaportes.length > 0 ? Math.max(...pasaportes.map(p => p.id_pasaporte)) + 1 : 1;
+                const newPasaporte = {
+                    id_pasaporte: newId,
+                    email: data.email || '',
+                    password: data.password || '',
+                    tlf: data.tlf || '',
+                    fecha_expedicion: data.fecha_expedicion || new Date().toISOString(),
+                    fecha_expiracion: data.fecha_expiracion || '',
+                    activo: data.activo !== undefined ? data.activo : 1
+                };
+                pasaportes.push(newPasaporte);
+                saveTable('Pasaporte', pasaportes);
+                return newPasaporte;
+            }
+
+            function getPasaporte(id) {
+                const pasaportes = getTable('Pasaporte');
+                return pasaportes.find(p => p.id_pasaporte === id);
+            }
+
+            function updatePasaporte(id, data) {
+                let pasaportes = getTable('Pasaporte');
+                const index = pasaportes.findIndex(p => p.id_pasaporte === id);
+                if (index !== -1) {
+                    pasaportes[index] = { ...pasaportes[index], ...data };
+                    saveTable('Pasaporte', pasaportes);
+                    return pasaportes[index];
+                }
+                return null;
+            }
+
+            function deletePasaporte(id) {
+                let pasaportes = getTable('Pasaporte');
+                const index = pasaportes.findIndex(p => p.id_pasaporte === id);
+                if (index !== -1) {
+                    pasaportes[index].activo = 0; // Borrado lógico
+                    saveTable('Pasaporte', pasaportes);
+                    return true;
+                }
+                return false;
+            }
+
+            // Funciones para Establecimiento
+            function addEstablecimiento(data) {
+                let establecimientos = getTable('Establecimiento');
+                const newId = establecimientos.length > 0 ? Math.max(...establecimientos.map(e => e.id_establecimiento)) + 1 : 1;
+                const newEstablecimiento = {
+                    id_establecimiento: newId,
+                    email: data.email || '',
+                    password: data.password || '',
+                    sede_social: data.sede_social || '',
+                    tlf: data.tlf || '',
+                    ruta: data.ruta || '',
+                    activo: data.activo !== undefined ? data.activo : 1
+                };
+                establecimientos.push(newEstablecimiento);
+                saveTable('Establecimiento', establecimientos);
+                return newEstablecimiento;
+            }
+
+            function getEstablecimiento(id) {
+                const establecimientos = getTable('Establecimiento');
+                return establecimientos.find(e => e.id_establecimiento === id);
+            }
+
+            function updateEstablecimiento(id, data) {
+                let establecimientos = getTable('Establecimiento');
+                const index = establecimientos.findIndex(e => e.id_establecimiento === id);
+                if (index !== -1) {
+                    establecimientos[index] = { ...establecimientos[index], ...data };
+                    saveTable('Establecimiento', establecimientos);
+                    return establecimientos[index];
+                }
+                return null;
+            }
+
+            function deleteEstablecimiento(id) {
+                let establecimientos = getTable('Establecimiento');
+                const index = establecimientos.findIndex(e => e.id_establecimiento === id);
+                if (index !== -1) {
+                    establecimientos[index].activo = 0;
+                    saveTable('Establecimiento', establecimientos);
+                    return true;
+                }
+                return false;
+            }
+
+            // Funciones para Sello
+            function addSello(data) {
+                let sellos = getTable('Sello');
+                // Verificar si ya existe la combinación id_pasaporte + id_establecimiento
+                const exists = sellos.some(s => s.id_pasaporte === data.id_pasaporte && s.id_establecimiento === data.id_establecimiento);
+                if (exists) {
+                    return null; // No permitir duplicados
+                }
+                const newSello = {
+                    id_pasaporte: data.id_pasaporte,
+                    id_establecimiento: data.id_establecimiento,
+                    fecha_sello: data.fecha_sello || new Date().toISOString(),
+                    activo: data.activo !== undefined ? data.activo : 1
+                };
+                sellos.push(newSello);
+                saveTable('Sello', sellos);
+                return newSello;
+            }
+
+            function getSellosByPasaporte(id_pasaporte) {
+                const sellos = getTable('Sello');
+                return sellos.filter(s => s.id_pasaporte === id_pasaporte && s.activo === 1);
+            }
+
+            function deleteSello(id_pasaporte, id_establecimiento) {
+                let sellos = getTable('Sello');
+                const index = sellos.findIndex(s => s.id_pasaporte === id_pasaporte && s.id_establecimiento === id_establecimiento);
+                if (index !== -1) {
+                    sellos[index].activo = 0;
+                    saveTable('Sello', sellos);
+                    return true;
+                }
+                return false;
+            }
+
+            // Funciones para Notificacion
+            function addNotificacion(data) {
+                let notificaciones = getTable('Notificacion');
+                const newId = notificaciones.length > 0 ? Math.max(...notificaciones.map(n => n.id_notificacion)) + 1 : 1;
+                const newNotificacion = {
+                    id_notificacion: newId,
+                    tipo: data.tipo || '',
+                    descripcion: data.descripcion || '',
+                    activo: data.activo !== undefined ? data.activo : 1
+                };
+                notificaciones.push(newNotificacion);
+                saveTable('Notificacion', notificaciones);
+                return newNotificacion;
+            }
+
+            function getNotificacion(id) {
+                const notificaciones = getTable('Notificacion');
+                return notificaciones.find(n => n.id_notificacion === id);
+            }
+
+            function updateNotificacion(id, data) {
+                let notificaciones = getTable('Notificacion');
+                const index = notificaciones.findIndex(n => n.id_notificacion === id);
+                if (index !== -1) {
+                    notificaciones[index] = { ...notificaciones[index], ...data };
+                    saveTable('Notificacion', notificaciones);
+                    return notificaciones[index];
+                }
+                return null;
+            }
+
+            function deleteNotificacion(id) {
+                let notificaciones = getTable('Notificacion');
+                const index = notificaciones.findIndex(n => n.id_notificacion === id);
+                if (index !== -1) {
+                    notificaciones[index].activo = 0;
+                    saveTable('Notificacion', notificaciones);
+                    return true;
+                }
+                return false;
+            }
+
+            // Funciones para Mensaje (relación pasaporte-notificacion)
+            function addMensaje(data) {
+                let mensajes = getTable('Mensaje');
+                // Verificar si ya existe la combinación id_pasaporte + id_notificacion
+                const exists = mensajes.some(m => m.id_pasaporte === data.id_pasaporte && m.id_notificacion === data.id_notificacion);
+                if (exists) {
+                    return null; // No permitir duplicados
+                }
+                const newMensaje = {
+                    id_pasaporte: data.id_pasaporte,
+                    id_notificacion: data.id_notificacion,
+                    fecha_entrega: data.fecha_entrega || new Date().toISOString(),
+                    estatus: data.estatus || 'no leido' // 'leido' o 'no leido'
+                };
+                mensajes.push(newMensaje);
+                saveTable('Mensaje', mensajes);
+                return newMensaje;
+            }
+
+            function getMensajesByPasaporte(id_pasaporte) {
+                const mensajes = getTable('Mensaje');
+                return mensajes.filter(m => m.id_pasaporte === id_pasaporte);
+            }
+
+            function updateMensaje(id_pasaporte, id_notificacion, data) {
+                let mensajes = getTable('Mensaje');
+                const index = mensajes.findIndex(m => m.id_pasaporte === id_pasaporte && m.id_notificacion === id_notificacion);
+                if (index !== -1) {
+                    mensajes[index] = { ...mensajes[index], ...data };
+                    saveTable('Mensaje', mensajes);
+                    return mensajes[index];
+                }
+                return null;
+            }
+
+            // Inicializar DB al cargar
+            initDB();
+
+            // Exposición de funciones para uso en páginas (más tarde)
+            window.db = {
+                addPasaporte,
+                getPasaporte,
+                updatePasaporte,
+                deletePasaporte,
+                addEstablecimiento,
+                getEstablecimiento,
+                updateEstablecimiento,
+                deleteEstablecimiento,
+                addSello,
+                getSellosByPasaporte,
+                deleteSello,
+                addNotificacion,
+                getNotificacion,
+                updateNotificacion,
+                deleteNotificacion,
+                addMensaje,
+                getMensajesByPasaporte,
+                updateMensaje
+            };
+
+            // Ejemplo de uso (para testing, remover más tarde)
+            // console.log(db.addPasaporte({ email: 'test@example.com', password: '123', tlf: '123456789' }));
+            // console.log(db.getTable('Pasaporte'));
         });
     </script>
 </body>
