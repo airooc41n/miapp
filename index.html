@@ -6,9 +6,10 @@
     <title>Pasaporte del Vino</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <style>
-        /* CSS para diseño moderno y responsive */
+        /* CSS para diseño moderno y responsive preservado de la versión original */
         * {
             margin: 0;
             padding: 0;
@@ -469,7 +470,7 @@
     <footer>
         <span class="icon home" title="Inicio" onclick="navigateTo('inicio')"><i class="fas fa-house"></i></span>
         <span class="icon export" title="Exportar DB"><i class="fas fa-file-export"></i></span>
-        <span>2026-v1.1</span>
+        <span>2026-v1.2</span>
         <span class="icon import" title="Importar DB"><i class="fas fa-file-import"></i></span>
         <span class="icon options" title="Opciones" onclick="toggleContextMenu()"><i class="fas fa-ellipsis-v"></i></span>
     </footer>
@@ -536,12 +537,16 @@
                 if (page === 'mipasaporte') loadPasaporteInfo();
                 if (page === 'admin') loadAdminData();
 
-                // Resetear estado del formulario de registro al entrar a la página
+                // 1. ARREGLO RESET: Resetear estado del formulario al entrar a la página
                 if (page === 'registrar') {
-                    document.getElementById('register-form').style.display = 'block';
+                    const form = document.getElementById('register-form');
+                    form.reset(); // Limpia los inputs
+                    form.style.display = 'block'; // Asegura que se vea el formulario
                     document.getElementById('post-register-actions').style.display = 'none';
                     document.getElementById('success-message').textContent = '';
+                    document.getElementById('error-message').textContent = '';
                     document.getElementById('qr-code').innerHTML = '';
+                    if (typeof grecaptcha !== 'undefined') grecaptcha.reset(); // Reinicia el captcha
                 }
             }
 
@@ -599,15 +604,12 @@
 
                 const newP = db.addPasaporte({ email, password, tlf: document.getElementById('tlf').value });
                 
-                // Ocultar form y mostrar éxito
                 registerForm.style.display = 'none';
                 succ.textContent = '¡Pasaporte creado con éxito!';
                 
-                // QR más grande (300px) y centrado
                 const qrUrl = `airooc41n.github.io/miapp?email=${encodeURIComponent(email)}&Id=${newP.id_pasaporte}`;
                 new QRCode(qrDiv, { text: qrUrl, width: 300, height: 300 });
 
-                // Guardar sesión y mostrar botón
                 localStorage.setItem('currentPasaporteId', newP.id_pasaporte);
                 document.getElementById('post-register-actions').style.display = 'block';
             });
@@ -636,7 +638,9 @@
                 
                 const qrCont = document.getElementById('pasaporte-qr');
                 qrCont.innerHTML = '';
-                new QRCode(qrCont, { text: `id:${p.id_pasaporte}`, width: 200, height: 200 });
+                // 2. QR IDÉNTICO: Ahora usa la misma URL que en el registro
+                const qrUrl = `airooc41n.github.io/miapp?email=${encodeURIComponent(p.email)}&Id=${p.id_pasaporte}`;
+                new QRCode(qrCont, { text: qrUrl, width: 250, height: 250 });
             }
 
             window.logout = () => { localStorage.removeItem('currentPasaporteId'); loadPasaporteInfo(); };
