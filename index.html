@@ -1,15 +1,4 @@
 <!DOCTYPE html>
-<html lang="en">
-
-  <head>
-    <meta charset="UTF-8">
-    <title>Wine0.3</title>
-    
-
-  </head>
-    
-  <body>
-  <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -18,6 +7,7 @@
     <!-- Nota: Para probar en local con un dominio como 'miapp.dev', configura tu archivo hosts (/etc/hosts en Unix o C:\Windows\System32\drivers\etc\hosts en Windows) agregando '127.0.0.1 miapp.dev' y usa un servidor local como 'http-server' de Node.js o Python's 'python -m http.server' para servir el archivo en http://miapp.dev:8080 o similar. Esto permite que history.pushState funcione sin problemas. Si abres directamente como file://, la navegación podría no actualizar la URL visiblemente, pero el contenido cambiará. -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script> <!-- reCAPTCHA v2 -->
     <style>
         /* CSS para diseño moderno y responsive */
         * {
@@ -41,7 +31,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 15px 20px;
-            background-color: #800020; /* Granate bonito */
+            background-color: #5e0b15; /* Paleta granate más suave */
             color: white;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             position: fixed;
@@ -140,26 +130,33 @@
 
         .page h1 {
             margin-bottom: 20px;
-            color: #800020; /* Granate bonito */
+            color: #5e0b15; /* Paleta granate más suave */
+            font-size: 2em;
+            font-weight: 700;
         }
 
         .page h2 {
-            margin-top: 20px;
-            color: #800020;
+            margin-top: 30px;
+            color: #5e0b15;
+            font-size: 1.5em;
+            font-weight: 600;
         }
 
         .page ul, .page ol {
             text-align: left;
-            margin: 10px auto;
+            margin: 15px auto;
             max-width: 800px;
+            line-height: 1.6;
         }
 
         .page p {
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            line-height: 1.6;
+            font-size: 1.1em;
         }
 
         .cta-button {
-            background-color: #28a745; /* Verde éxito para CTA */
+            background-color: #5e0b15; /* Acorde a paleta */
             color: white;
             padding: 15px 30px;
             font-size: 1.5em;
@@ -172,7 +169,7 @@
         }
 
         .cta-button:hover {
-            background-color: #218838; /* Verde más oscuro en hover */
+            background-color: #480910; /* Más oscuro */
         }
 
         form {
@@ -203,6 +200,8 @@
 
         .password-container input {
             padding-right: 40px;
+            width: 100%; /* Asegura ancho fijo */
+            box-sizing: border-box; /* Mantiene el diseño */
         }
 
         .password-container i {
@@ -215,7 +214,7 @@
         }
 
         button[type="submit"] {
-            background-color: #800020;
+            background-color: #5e0b15;
             color: white;
             padding: 10px;
             width: 100%;
@@ -226,7 +225,7 @@
         }
 
         button[type="submit"]:hover {
-            background-color: #660018;
+            background-color: #480910;
         }
 
         #error-message {
@@ -241,6 +240,65 @@
 
         #qr-code {
             margin-top: 20px;
+            text-align: center;
+        }
+
+        #qr-code div {
+            margin: 0 auto;
+        }
+
+        /* Menú contextual bottom */
+        #context-menu {
+            position: fixed;
+            bottom: -50%;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            background-color: #ffffff;
+            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.2);
+            transition: bottom 0.5s ease-in-out;
+            z-index: 2000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        #context-menu.active {
+            bottom: 0;
+        }
+
+        #context-menu .close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 1.8em;
+            cursor: pointer;
+        }
+
+        #context-menu ul {
+            list-style: none;
+        }
+
+        #context-menu li {
+            margin: 15px 0;
+        }
+
+        #context-menu a {
+            text-decoration: none;
+            color: #333;
+            font-size: 1.2em;
+            display: block;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background 0.2s;
+        }
+
+        #context-menu a:hover {
+            background-color: #e9ecef;
+        }
+
+        #pasaporte-info {
+            margin-top: 20px;
+            text-align: left;
         }
 
         footer {
@@ -248,7 +306,7 @@
             justify-content: space-around;
             align-items: center;
             padding: 15px;
-            background-color: #800020; /* Granate bonito */
+            background-color: #5e0b15; /* Paleta granate más suave */
             color: white;
             position: fixed;
             width: 100%;
@@ -272,6 +330,11 @@
             #menu {
                 width: 80%;
                 right: -80%;
+            }
+
+            #context-menu {
+                height: 60%;
+                bottom: -60%;
             }
         }
 
@@ -367,6 +430,8 @@
                 <label for="tlf">Teléfono (opcional):</label>
                 <input type="tel" id="tlf">
 
+                <div class="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"></div> <!-- Placeholder sitekey, reemplaza con tu clave real -->
+
                 <button type="submit">Crear Pasaporte</button>
             </form>
             <div id="error-message"></div>
@@ -375,7 +440,29 @@
         </section>
         <section id="mipasaporte" class="page">
             <h1>Mi pasaporte</h1>
-            <p>Contenido para mi pasaporte.</p>
+            <form id="login-form" style="display: block;">
+                <label for="login-email">Email:</label>
+                <input type="email" id="login-email" required>
+
+                <label for="login-password">Contraseña:</label>
+                <div class="password-container">
+                    <input type="password" id="login-password" required>
+                    <i class="fas fa-eye" id="toggle-login-password"></i>
+                </div>
+
+                <div class="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"></div> <!-- Placeholder sitekey -->
+
+                <button type="submit">Iniciar Sesión</button>
+            </form>
+            <div id="login-error"></div>
+            <div id="pasaporte-info" style="display: none;">
+                <p id="pasaporte-email"></p>
+                <p id="pasaporte-fecha-expedicion"></p>
+                <p id="pasaporte-fecha-expiracion"></p>
+                <p id="pasaporte-sellos"></p>
+                <div id="pasaporte-qr"></div>
+                <button onclick="logout()">Cerrar Sesión</button>
+            </div>
         </section>
         <section id="establecimientos" class="page">
             <h1>Establecimientos</h1>
@@ -388,8 +475,13 @@
         <span class="icon export" title="Exportar DB"><i class="fas fa-file-export"></i></span>
         <span>Pasaporte del Vino - 2026</span>
         <span class="icon import" title="Importar DB"><i class="fas fa-file-import"></i></span>
-        <span class="icon options" title="Opciones"><i class="fas fa-ellipsis-v"></i></span> <!-- Tres puntos verticales -->
+        <span class="icon options" title="Opciones" onclick="toggleContextMenu()"><i class="fas fa-ellipsis-v"></i></span> <!-- Tres puntos verticales -->
     </footer>
+
+    <div id="context-menu">
+        <div class="close" onclick="toggleContextMenu()">&times;</div>
+        <ul id="context-items"></ul>
+    </div>
 
     <script>
         // JS para manejar el menú y las páginas de forma asíncrona
@@ -399,8 +491,10 @@
             const close = menu.querySelector('.close');
             const overlay = document.getElementById('overlay');
             const pages = document.querySelectorAll('.page');
+            const contextMenu = document.getElementById('context-menu');
+            const contextItems = document.getElementById('context-items');
 
-            // Función para abrir/cerrar menú
+            // Función para abrir/cerrar menú lateral
             function toggleMenu() {
                 menu.classList.toggle('active');
                 overlay.classList.toggle('active');
@@ -409,6 +503,48 @@
             hamburger.addEventListener('click', toggleMenu);
             close.addEventListener('click', toggleMenu);
             overlay.addEventListener('click', toggleMenu);
+
+            // Función para abrir/cerrar menú contextual bottom
+            window.toggleContextMenu = function() {
+                contextMenu.classList.toggle('active');
+                overlay.classList.toggle('active');
+                loadContextItems(); // Cargar items basados en página actual
+            };
+
+            overlay.addEventListener('click', () => {
+                if (contextMenu.classList.contains('active')) toggleContextMenu();
+            });
+
+            // Cargar items de menú contextual por página
+            function loadContextItems() {
+                const currentPage = new URLSearchParams(window.location.search).get('page') || 'inicio';
+                contextItems.innerHTML = '';
+                let items = [];
+                switch (currentPage) {
+                    case 'inicio':
+                        items = ['Opción Inicio 1', 'Opción Inicio 2'];
+                        break;
+                    case 'registrar':
+                        items = ['Opción Registrar 1', 'Opción Registrar 2'];
+                        break;
+                    case 'mipasaporte':
+                        items = ['Opción Mi Pasaporte 1', 'Opción Mi Pasaporte 2'];
+                        break;
+                    case 'establecimientos':
+                        items = ['Opción Establecimientos 1', 'Opción Establecimientos 2'];
+                        break;
+                    default:
+                        items = ['Opción Default 1'];
+                }
+                items.forEach(item => {
+                    const li = document.createElement('li');
+                    const a = document.createElement('a');
+                    a.textContent = item;
+                    a.href = '#'; // Placeholder
+                    li.appendChild(a);
+                    contextItems.appendChild(li);
+                });
+            }
 
             // Función para navegar a una página
             window.navigateTo = function(page) {
@@ -428,6 +564,8 @@
                     document.getElementById('inicio').classList.add('active');
                     history.replaceState(null, '', '?page=inicio');
                 }
+                // Cargar info si es mi pasaporte
+                if (page === 'mipasaporte') loadPasaporteInfo();
             }
 
             // Escuchar cambios en history para simular navegación asíncrona
@@ -478,7 +616,7 @@
                     password: data.password || '',
                     tlf: data.tlf || '',
                     fecha_expedicion: data.fecha_expedicion || new Date().toISOString(),
-                    fecha_expiracion: data.fecha_expiracion || '',
+                    fecha_expiracion: data.fecha_expiracion || new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString(), // Ejemplo: expira en 1 año
                     activo: data.activo !== undefined ? data.activo : 1
                 };
                 pasaportes.push(newPasaporte);
@@ -489,6 +627,11 @@
             function getPasaporte(id) {
                 const pasaportes = getTable('Pasaporte');
                 return pasaportes.find(p => p.id_pasaporte === id);
+            }
+
+            function getPasaporteByEmail(email) {
+                const pasaportes = getTable('Pasaporte');
+                return pasaportes.find(p => p.email === email && p.activo === 1);
             }
 
             function updatePasaporte(id, data) {
@@ -693,7 +836,8 @@
                 addMensaje,
                 getMensajesByPasaporte,
                 updateMensaje,
-                getTable // Agregado para verificaciones
+                getTable, // Agregado para verificaciones
+                getPasaporteByEmail
             };
 
             // Manejo del formulario de registro
@@ -702,7 +846,7 @@
             const successMessage = document.getElementById('success-message');
             const qrCodeDiv = document.getElementById('qr-code');
 
-            // Toggle password visibility
+            // Toggle password visibility for register
             const togglePassword = document.getElementById('toggle-password');
             const passwordInput = document.getElementById('password');
             togglePassword.addEventListener('click', () => {
@@ -726,6 +870,13 @@
                 errorMessage.textContent = '';
                 successMessage.textContent = '';
                 qrCodeDiv.innerHTML = '';
+
+                // Verificar reCAPTCHA (simulado, en producción verifica token en server)
+                const recaptchaResponse = grecaptcha.getResponse();
+                if (!recaptchaResponse) {
+                    errorMessage.textContent = 'Por favor, completa el reCAPTCHA.';
+                    return;
+                }
 
                 const email = document.getElementById('email').value.trim();
                 const password = document.getElementById('password').value;
@@ -762,19 +913,107 @@
 
                 successMessage.textContent = 'Pasaporte creado exitosamente.';
 
-                // Generar QR
+                // Generar QR más grande
                 const qrUrl = `airooc41n.github.io/miapp?email=${encodeURIComponent(email)}&Id=${newPasaporte.id_pasaporte}`;
                 new QRCode(qrCodeDiv, {
                     text: qrUrl,
-                    width: 128,
-                    height: 128
+                    width: 256,
+                    height: 256
                 });
             });
+
+            // Manejo del formulario de login en Mi Pasaporte
+            const loginForm = document.getElementById('login-form');
+            const loginError = document.getElementById('login-error');
+            const pasaporteInfo = document.getElementById('pasaporte-info');
+            const pasaporteEmail = document.getElementById('pasaporte-email');
+            const pasaporteFechaExpedicion = document.getElementById('pasaporte-fecha-expedicion');
+            const pasaporteFechaExpiracion = document.getElementById('pasaporte-fecha-expiracion');
+            const pasaporteSellos = document.getElementById('pasaporte-sellos');
+            const pasaporteQr = document.getElementById('pasaporte-qr');
+
+            // Toggle password visibility for login
+            const toggleLoginPassword = document.getElementById('toggle-login-password');
+            const loginPasswordInput = document.getElementById('login-password');
+            toggleLoginPassword.addEventListener('click', () => {
+                const type = loginPasswordInput.type === 'password' ? 'text' : 'password';
+                loginPasswordInput.type = type;
+                toggleLoginPassword.classList.toggle('fa-eye');
+                toggleLoginPassword.classList.toggle('fa-eye-slash');
+            });
+
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                loginError.textContent = '';
+
+                // Verificar reCAPTCHA
+                const recaptchaResponse = grecaptcha.getResponse();
+                if (!recaptchaResponse) {
+                    loginError.textContent = 'Por favor, completa el reCAPTCHA.';
+                    return;
+                }
+
+                const email = document.getElementById('login-email').value.trim();
+                const password = document.getElementById('login-password').value;
+
+                const pasaporte = db.getPasaporteByEmail(email);
+                if (!pasaporte || pasaporte.password !== password) {
+                    loginError.textContent = 'Credenciales inválidas.';
+                    return;
+                }
+
+                // Guardar sesión
+                localStorage.setItem('currentPasaporteId', pasaporte.id_pasaporte);
+
+                // Mostrar info
+                loadPasaporteInfo();
+            });
+
+            // Cargar info de pasaporte si logueado
+            function loadPasaporteInfo() {
+                const currentId = parseInt(localStorage.getItem('currentPasaporteId'));
+                if (!currentId) {
+                    loginForm.style.display = 'block';
+                    pasaporteInfo.style.display = 'none';
+                    return;
+                }
+
+                const pasaporte = db.getPasaporte(currentId);
+                if (!pasaporte) {
+                    logout();
+                    return;
+                }
+
+                loginForm.style.display = 'none';
+                pasaporteInfo.style.display = 'block';
+
+                pasaporteEmail.textContent = `Email: ${pasaporte.email}`;
+                pasaporteFechaExpedicion.textContent = `Fecha de Expedición: ${new Date(pasaporte.fecha_expedicion).toLocaleDateString()}`;
+                pasaporteFechaExpiracion.textContent = `Fecha de Expiración: ${new Date(pasaporte.fecha_expiracion).toLocaleDateString()}`;
+
+                const sellos = db.getSellosByPasaporte(currentId);
+                let sellosText = `Sellos: ${sellos.length}/4\n`;
+                sellos.forEach(sello => {
+                    const est = db.getEstablecimiento(sello.id_establecimiento);
+                    sellosText += `- ${est ? est.sede_social : 'Establecimiento desconocido'} (${new Date(sello.fecha_sello).toLocaleDateString()})\n`;
+                });
+                pasaporteSellos.textContent = sellosText;
+
+                pasaporteQr.innerHTML = '';
+                const qrUrl = `airooc41n.github.io/miapp?email=${encodeURIComponent(pasaporte.email)}&Id=${pasaporte.id_pasaporte}`;
+                new QRCode(pasaporteQr, {
+                    text: qrUrl,
+                    width: 256,
+                    height: 256
+                });
+            }
+
+            // Logout
+            window.logout = function() {
+                localStorage.removeItem('currentPasaporteId');
+                loadPasaporteInfo();
+            };
         });
     </script>
 </body>
-</html>
-    
-  </body>
-  
 </html>
