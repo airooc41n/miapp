@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pasaporte del Vino</title>
+    <!-- Nota: Para probar en local con un dominio como 'miapp.dev', configura tu archivo hosts (/etc/hosts en Unix o C:\Windows\System32\drivers\etc\hosts en Windows) agregando '127.0.0.1 miapp.dev' y usa un servidor local como 'http-server' de Node.js o Python's 'python -m http.server' para servir el archivo en http://miapp.dev:8080 o similar. Esto permite que history.pushState funcione sin problemas. Si abres directamente como file://, la navegación podría no actualizar la URL visiblemente, pero el contenido cambiará. -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script> <!-- reCAPTCHA v2 -->
+    <style>
+        /* CSS para diseño moderno y responsive */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+            background-color: #f4f7fa;
+            color: #333;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background-color: #5e0b15; /* Paleta granate más suave */
+            color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+        .logo {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        .hamburger {
+            cursor: pointer;
+            font-size: 1.8em;
+        }
+        #menu {
+            position: fixed;
+            top: 0;
+            right: -60%;
+            width: 60%;
+            height: 100%;
+            background-color: #ffffff;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.2);
+            transition: right 0.5s ease-in-out; /* Suavizado el efecto */
+            z-index: 2000;
+            padding: 60px 20px 20px;
+            overflow-y: auto;
+        }
+        #menu.active {
+            right: 0;
+        }
+        #menu .close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 1.8em;
+            cursor: pointer;
+        }
+        #menu ul {
+            list-style: none;
+        }
+        #menu li {
+            margin: 15px 0;
+        }
+        #menu a {
+            text-decoration: none;
+            color: #333;
+            font-size: 1.2em;
+            display: block;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background 0.2s;
+        }
+        #menu a:hover {
+            background-color: #e9ecef;
+        }
+        #overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 1500;
+        }
+        #overlay.active {
+            display: block;
+        }
+        main {
+            flex: 1;
+            padding: 70px 20px 60px;
+            overflow-y: auto;
+        }
+        .page {
+            display: none;
+            text-align: center;
+        }
+        .page.active {
+            display: block;
+        }
+        .page h1 {
+            margin-bottom: 20px;
+            color: #5e0b15; /* Paleta granate más suave */
+            font-size: 2em;
+            font-weight: 700;
+        }
+        .page h2 {
+            margin-top: 30px;
+            color: #5e0b15;
+            font-size: 1.5em;
+            font-weight: 600;
+        }
+        .page ul, .page ol {
+            text-align: left;
+            margin: 15px auto;
+            max-width: 800px;
+            line-height: 1.6;
+        }
+        .page p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+            font-size: 1.1em;
+        }
+        .cta-button {
+            background-color: #5e0b15; /* Acorde a paleta */
+            color: white;
+            padding: 15px 30px;
+            font-size: 1.5em;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 20px auto;
+            display: block;
+            transition: background-color 0.2s;
+        }
+        .cta-button:hover {
+            background-color: #480910; /* Más oscuro */
+        }
+        form {
+            max-width: 400px;
+            margin: 0 auto;
+            text-align: left;
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        input[type="email"],
+        input[type="password"],
+        input[type="tel"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .password-container {
+            position: relative;
+        }
+        .password-container input {
+            padding-right: 40px;
+            width: 100%; /* Asegura ancho fijo */
+            box-sizing: border-box; /* Mantiene el diseño */
+        }
+        .password-container i {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #999;
+        }
+        button[type="submit"] {
+            background-color: #5e0b15;
+            color: white;
+            padding: 10px;
+            width: 100%;
+            border: none;
+            border-radius: 5px;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+        button[type="submit"]:hover {
+            background-color: #480910;
+        }
+        #error-message {
+            color: red;
+            margin-top: 10px;
+        }
+        #success-message {
+            color: green;
+            margin-top: 10px;
+        }
+        #qr-code {
+            margin-top: 20px;
+            text-align: center;
+        }
+        #qr-code div {
+            margin: 0 auto;
+        }
+        /* Menú contextual bottom */
+        #context-menu {
+            position: fixed;
+            bottom: -50%;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            background-color: #ffffff;
+            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.2);
+            transition: bottom 0.5s ease-in-out;
+            z-index: 2000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        #context-menu.active {
+            bottom: 0;
+        }
+        #context-menu .close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 1.8em;
+            cursor: pointer;
+        }
+        #context-menu ul {
+            list-style: none;
+        }
+        #context-menu li {
+            margin: 15px 0;
+        }
+        #context-menu a {
+            text-decoration: none;
+            color: #333;
+            font-size: 1.2em;
+            display: block;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background 0.2s;
+        }
+        #context-menu a:hover {
+            background-color: #e9ecef;
+        }
+        #pasaporte-info {
+            margin-top: 20px;
+            text-align: left;
+        }
+        footer {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 15px;
+            background-color: #5e0b15; /* Paleta granate más suave */
+            color: white;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        }
+        footer .icon {
+            cursor: pointer;
+            font-size: 1.5em;
+            margin: 0 10px;
+            transition: color 0.2s;
+        }
+        footer .icon:hover {
+            color: #ffd700;
+        }
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            #menu {
+                width: 80%;
+                right: -80%;
+            }
+            #context-menu {
+                height: 60%;
+                bottom: -60%;
+            }
+        }
+        @media (min-width: 1024px) {
+            main {
+                max-width: 800px;
+                margin: 0 auto;
+            }
+        }
+        /* Estilos para tablas en admin */
+        .table-wrapper {
+            margin-bottom: 40px;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #5e0b15;
+            color: white;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        .delete-icon {
+            cursor: pointer;
+            color: #ff0000;
+            font-size: 1.2em;
+        }
+        .delete-all-btn {
+            background-color: #ff0000;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        .delete-all-btn:hover {
+            background-color: #cc0000;
+        }
+        .logout-btn {
+            background-color: #5e0b15;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        .logout-btn:hover {
+            background-color: #480910;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">Pasaporte del Vino</div>
+        <div class="hamburger">&#9776;</div>
+    </header>
+    <div id="menu">
+        <div class="close">&times;</div>
+        <ul>
+            <li><a href="?page=registrar">Registrar pasaporte</a></li>
+            <li><a href="?page=mipasaporte">Mi pasaporte</a></li>
+            <li><a href="?page=establecimientos">Establecimientos</a></li>
+            <li><a href="?page=admin">Admin</a></li>
+        </ul>
+    </div>
+    <div id="overlay"></div>
+    <main>
+        <section id="inicio" class="page">
+            <h1>Inicio</h1>
+            <button class="cta-button" onclick="navigateTo('registrar')">Obtener Pasaporte</button> <!-- CTA al principio -->
+            <h2>Pasaporte del Vino - Provincia de Valladolid</h2>
+            <p><em>"Un viaje con sentido"</em></p>
+            <h2>Descripción</h2>
+            <p>El Pasaporte del Vino es una iniciativa turística para promover el enoturismo en las Rutas del Vino de la Provincia de Valladolid. Dirigido a apasionados del vino, permite descubrir experiencias turísticas en establecimientos adheridos. Se requiere completar un mínimo de 4 experiencias distintas para participar en beneficios y sorteos.</p>
+            <h2>Cómo Obtenerlo y Participar</h2>
+            <ol>
+                <li>Descarga la hoja de sellado del Pasaporte Turístico del Vino desde el PDF disponible o consíguela en establecimientos adheridos, Oficinas de Turismo o Centros Turísticos de la Provincia de Valladolid.</li>
+                <li>Visita establecimientos adheridos en las Rutas del Vino. Consulta su localización, horarios y listado filtrable por rutas en la página correspondiente.</li>
+                <li>Completa el pasaporte con al menos 4 sellos de experiencias distintas. Fotografía la página con datos personales, aceptación de política de privacidad y protección de datos.</li>
+                <li>Envía la fotografía por WhatsApp al 650 623 088 o por correo electrónico a turismo@dipvalladolid.es.</li>
+            </ol>
+            <button class="cta-button" onclick="navigateTo('registrar')">Obtener Pasaporte</button> <!-- CTA al medio -->
+            <h2>Beneficios</h2>
+            <ul>
+                <li>Lote gratis de productos de la marca "Alimentos de Valladolid, a gusto de todos".</li>
+                <li>Descuentos en entradas a Centros Turísticos provinciales.</li>
+                <li>Participación en sorteo de 4 experiencias de enoturismo para dos personas en las Rutas del Vino (sorteo en enero de 2026).</li>
+            </ul>
+            <h2>Términos y Condiciones</h2>
+            <ul>
+                <li>Deben cumplirse al menos 4 sellos distintos y correctos de establecimientos colaboradores.</li>
+                <li>Verificación de sellos correspondientes a la iniciativa; sellos idénticos en múltiples participaciones no válidos.</li>
+                <li>Participantes mayores de edad; un solo premio por titular.</li>
+                <li>Un sello puede usarse como comodín en ferias de turismo donde participe la Diputación de Valladolid.</li>
+                <li>Campaña finaliza el 30 de diciembre de 2025; pasaportes recibidos antes se incluyen en el sorteo.</li>
+                <li>En caso de irregularidades, el pasaporte se declara nulo sin derecho a premios.</li>
+            </ul>
+            <h2>Política de Privacidad y Protección de Datos</h2>
+            <p>Responsable: Diputación Provincial de Valladolid (Patronato de Turismo). Base jurídica: Interés público y consentimiento del interesado. Finalidad: Promoción de actividades turísticas vía web, medios de comunicación, correo y redes sociales. Destinatarios: Entidades para fines promocionales, incluyendo prensa y redes de turismo. Ejercicio de derechos: Contacto vía dpd@dipvalladolid.es con DNI, tipo de derecho y tratamiento asociado.</p>
+            <h2>Establecimientos Participantes</h2>
+            <p>Establecimientos adheridos en rutas como la del Vino de Cigales (ejemplos: Diez Drones, Fotokol, Carnicería Maruja, La Pequeña Bodega, Finca Museum, entre otros). Total de 183 resultados disponibles, incluyendo bodegas, tiendas y más. Listado filtrable por rutas en la página original.</p>
+            <button class="cta-button" onclick="navigateTo('registrar')">Obtener Pasaporte</button> <!-- CTA al final -->
+        </section>
+        <section id="registrar" class="page">
+            <h1>Registrar pasaporte</h1>
+            <form id="register-form">
+                <label for="email">Email:</label>
+                <input type="email" id="email" required>
+                <label for="password">Contraseña:</label>
+                <div class="password-container">
+                    <input type="password" id="password" required>
+                    <i class="fas fa-eye" id="toggle-password"></i>
+                </div>
+                <label for="confirm-password">Confirmar Contraseña:</label>
+                <div class="password-container">
+                    <input type="password" id="confirm-password" required>
+                    <i class="fas fa-eye" id="toggle-confirm-password"></i>
+                </div>
+                <label for="tlf">Teléfono (opcional):</label>
+                <input type="tel" id="tlf">
+                <div class="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"></div> <!-- Placeholder sitekey, reemplaza con tu clave real -->
+                <button type="submit">Crear Pasaporte</button>
+            </form>
+            <div id="error-message"></div>
+            <div id="success-message"></div>
+            <div id="qr-code"></div>
+        </section>
+        <section id="mipasaporte" class="page">
+            <h1>Mi pasaporte</h1>
+            <form id="login-form" style="display: block;">
+                <label for="login-email">Email:</label>
+                <input type="email" id="login-email" required>
+                <label for="login-password">Contraseña:</label>
+                <div class="password-container">
+                    <input type="password" id="login-password" required>
+                    <i class="fas fa-eye" id="toggle-login-password"></i>
+                </div>
+                <div class="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"></div> <!-- Placeholder sitekey -->
+                <button type="submit">Iniciar Sesión</button>
+            </form>
+            <div id="login-error"></div>
+            <div id="pasaporte-info" style="display: none;">
+                <p id="pasaporte-email"></p>
+                <p id="pasaporte-fecha-expedicion"></p>
+                <p id="pasaporte-fecha-expiracion"></p>
+                <p id="pasaporte-sellos"></p>
+                <div id="pasaporte-qr"></div>
+                <button class="logout-btn" onclick="logout()">Cerrar Sesión</button>
+            </div>
+        </section>
+        <section id="establecimientos" class="page">
+            <h1>Establecimientos</h1>
+            <p>Contenido para establecimientos.</p>
+        </section>
+        <section id="admin" class="page">
+            <h1>Admin</h1>
+            <div class="table-wrapper">
+                <h2>Pasaportes</h2>
+                <button class="delete-all-btn" onclick="clearTable('Pasaporte')">Borrar todos los pasaportes</button>
+                <table id="pasaporte-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Email</th>
+                            <th>Teléfono</th>
+                            <th>Fecha Expedición</th>
+                            <th>Fecha Expiración</th>
+                            <th>Activo</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Generado dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="table-wrapper">
+                <h2>Establecimientos</h2>
+                <button class="delete-all-btn" onclick="clearTable('Establecimiento')">Borrar todos los establecimientos</button>
+                <table id="establecimiento-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Email</th>
+                            <th>Sede Social</th>
+                            <th>Teléfono</th>
+                            <th>Ruta</th>
+                            <th>Activo</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Generado dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="table-wrapper">
+                <h2>Sellos</h2>
+                <button class="delete-all-btn" onclick="clearTable('Sello')">Borrar todos los sellos</button>
+                <table id="sello-table">
+                    <thead>
+                        <tr>
+                            <th>ID Pasaporte</th>
+                            <th>ID Establecimiento</th>
+                            <th>Fecha Sello</th>
+                            <th>Activo</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Generado dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="table-wrapper">
+                <h2>Notificaciones</h2>
+                <button class="delete-all-btn" onclick="clearTable('Notificacion')">Borrar todas las notificaciones</button>
+                <table id="notificacion-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Tipo</th>
+                            <th>Descripción</th>
+                            <th>Activo</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Generado dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="table-wrapper">
+                <h2>Mensajes</h2>
+                <button class="delete-all-btn" onclick="clearTable('Mensaje')">Borrar todos los mensajes</button>
+                <table id="mensaje-table">
+                    <thead>
+                        <tr>
+                            <th>ID Pasaporte</th>
+                            <th>ID Notificación</th>
+                            <th>Fecha Entrega</th>
+                            <th>Estatus</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Generado dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <span class="icon home" title="Inicio" onclick="navigateTo('inicio')"><i class="fas fa-house"></i></span> <!-- Icono plano de home -->
+        <span class="icon export" title="Exportar DB"><i class="fas fa-file-export"></i></span>
+        <span>Pasaporte del Vino - 2026 v1.0</span>
+        <span class="icon import" title="Importar DB"><i class="fas fa-file-import"></i></span>
+        <span class="icon options" title="Opciones" onclick="toggleContextMenu()"><i class="fas fa-ellipsis-v"></i></span> <!-- Tres puntos verticales -->
+    </footer>
+    <div id="context-menu">
+        <div class="close" onclick="toggleContextMenu()">&times;</div>
+        <ul id="context-items"></ul>
+    </div>
+    <script>
+        // JS para manejar el menú y las páginas de forma asíncrona
+        document.addEventListener('DOMContentLoaded', () => {
+            const hamburger = document.querySelector('.hamburger');
+            const menu = document.getElementById('menu');
+            const close = menu.querySelector('.close');
+            const overlay = document.getElementById('overlay');
+            const pages = document.querySelectorAll('.page');
+            const contextMenu = document.getElementById('context-menu');
+            const contextItems = document.getElementById('context-items');
+
+            // Función para abrir/cerrar menú lateral
+            function toggleMenu() {
+                menu.classList.toggle('active');
+                overlay.classList.toggle('active');
+            }
+
+            hamburger.addEventListener('click', toggleMenu);
+            close.addEventListener('click', toggleMenu);
+            overlay.addEventListener('click', toggleMenu);
+
+            // Función para abrir/cerrar menú contextual bottom
+            window.toggleContextMenu = function() {
+                contextMenu.classList.toggle('active');
+                overlay.classList.toggle('active');
+                loadContextItems(); // Cargar items basados en página actual
+            };
+
+            overlay.addEventListener('click', () => {
+                if (contextMenu.classList.contains('active')) toggleContextMenu();
+            });
+
+            // Cargar items de menú contextual por página
+            function loadContextItems() {
+                const currentPage = new URLSearchParams(window.location.search).get('page') || 'inicio';
+                contextItems.innerHTML = '';
+                let items = [];
+                switch (currentPage) {
+                    case 'inicio':
+                        items = ['Opción Inicio 1', 'Opción Inicio 2'];
+                        break;
+                    case 'registrar':
+                        items = ['Opción Registrar 1', 'Opción Registrar 2'];
+                        break;
+                    case 'mipasaporte':
+                        items = ['Opción Mi Pasaporte 1', 'Opción Mi Pasaporte 2'];
+                        break;
+                    case 'establecimientos':
+                        items = ['Opción Establecimientos 1', 'Opción Establecimientos 2'];
+                        break;
+                    default:
+                        items = ['Opción Default 1'];
+                }
+                items.forEach(item => {
+                    const li = document.createElement('li');
+                    const a = document.createElement('a');
+                    a.textContent = item;
+                    a.href = '#'; // Placeholder
+                    li.appendChild(a);
+                    contextItems.appendChild(li);
+                });
+            }
+
+            // Función para navegar a una página
+            window.navigateTo = function(page) {
+                history.pushState(null, '', `?page=${page}`);
+                loadPage();
+            };
+
+            // Manejar cambio de página vía URL param
+            function loadPage() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const page = urlParams.get('page') || 'inicio';
+                pages.forEach(p => p.classList.remove('active'));
+                const activePage = document.getElementById(page);
+                if (activePage) {
+                    activePage.classList.add('active');
+                } else {
+                    document.getElementById('inicio').classList.add('active');
+                    history.replaceState(null, '', '?page=inicio');
+                }
+                // Cargar info si es mi pasaporte
+                if (page === 'mipasaporte') loadPasaporteInfo();
+                // Cargar datos si es admin
+                if (page === 'admin') loadAdminData();
+            }
+
+            // Escuchar cambios en history para simular navegación asíncrona
+            window.addEventListener('popstate', loadPage);
+
+            // Cargar página inicial
+            loadPage();
+
+            // Manejar clicks en links del menú (simular navegación sin recarga)
+            menu.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const href = new URL(link.href);
+                    const page = href.searchParams.get('page');
+                    navigateTo(page);
+                    toggleMenu();
+                });
+            });
+
+            // Implementación de la DB en localStorage
+            // Inicializar la DB si no existe
+            function initDB() {
+                const tables = ['Pasaporte', 'Establecimiento', 'Sello', 'Notificacion', 'Mensaje'];
+                tables.forEach(table => {
+                    if (!localStorage.getItem(table)) {
+                        localStorage.setItem(table, JSON.stringify([]));
+                    }
+                });
+            }
+
+            // Función genérica para obtener una tabla
+            function getTable(tableName) {
+                return JSON.parse(localStorage.getItem(tableName) || '[]');
+            }
+
+            // Función genérica para guardar una tabla
+            function saveTable(tableName, data) {
+                localStorage.setItem(tableName, JSON.stringify(data));
+            }
+
+            // Funciones para Pasaporte
+            function addPasaporte(data) {
+                let pasaportes = getTable('Pasaporte');
+                const newId = pasaportes.length > 0 ? Math.max(...pasaportes.map(p => p.id_pasaporte)) + 1 : 1;
+                const newPasaporte = {
+                    id_pasaporte: newId,
+                    email: data.email || '',
+                    password: data.password || '',
+                    tlf: data.tlf || '',
+                    fecha_expedicion: data.fecha_expedicion || new Date().toISOString(),
+                    fecha_expiracion: data.fecha_expiracion || new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString(), // Ejemplo: expira en 1 año
+                    activo: data.activo !== undefined ? data.activo : 1
+                };
+                pasaportes.push(newPasaporte);
+                saveTable('Pasaporte', pasaportes);
+                return newPasaporte;
+            }
+
+            function getPasaporte(id) {
+                const pasaportes = getTable('Pasaporte');
+                return pasaportes.find(p => p.id_pasaporte === id);
+            }
+
+            function getPasaporteByEmail(email) {
+                const pasaportes = getTable('Pasaporte');
+                return pasaportes.find(p => p.email === email && p.activo === 1);
+            }
+
+            function updatePasaporte(id, data) {
+                let pasaportes = getTable('Pasaporte');
+                const index = pasaportes.findIndex(p => p.id_pasaporte === id);
+                if (index !== -1) {
+                    pasaportes[index] = { ...pasaportes[index], ...data };
+                    saveTable('Pasaporte', pasaportes);
+                    return pasaportes[index];
+                }
+                return null;
+            }
+
+            function deletePasaporte(id) {
+                let pasaportes = getTable('Pasaporte');
+                const index = pasaportes.findIndex(p => p.id_pasaporte === id);
+                if (index !== -1) {
+                    pasaportes[index].activo = 0;
+                    saveTable('Pasaporte', pasaportes);
+                    return true;
+                }
+                return false;
+            }
+
+            // Funciones para Establecimiento
+            function addEstablecimiento(data) {
+                let establecimientos = getTable('Establecimiento');
+                const newId = establecimientos.length > 0 ? Math.max(...establecimientos.map(e => e.id_establecimiento)) + 1 : 1;
+                const newEstablecimiento = {
+                    id_establecimiento: newId,
+                    email: data.email || '',
+                    password: data.password || '',
+                    sede_social: data.sede_social || '',
+                    tlf: data.tlf || '',
+                    ruta: data.ruta || '',
+                    activo: data.activo !== undefined ? data.activo : 1
+                };
+                establecimientos.push(newEstablecimiento);
+                saveTable('Establecimiento', establecimientos);
+                return newEstablecimiento;
+            }
+
+            function getEstablecimiento(id) {
+                const establecimientos = getTable('Establecimiento');
+                return establecimientos.find(e => e.id_establecimiento === id);
+            }
+
+            function updateEstablecimiento(id, data) {
+                let establecimientos = getTable('Establecimiento');
+                const index = establecimientos.findIndex(e => e.id_establecimiento === id);
+                if (index !== -1) {
+                    establecimientos[index] = { ...establecimientos[index], ...data };
+                    saveTable('Establecimiento', establecimientos);
+                    return establecimientos[index];
+                }
+                return null;
+            }
+
+            function deleteEstablecimiento(id) {
+                let establecimientos = getTable('Establecimiento');
+                const index = establecimientos.findIndex(e => e.id_establecimiento === id);
+                if (index !== -1) {
+                    establecimientos[index].activo = 0;
+                    saveTable('Establecimiento', establecimientos);
+                    return true;
+                }
+                return false;
+            }
+
+            // Funciones para Sello
+            function addSello(data) {
+                let sellos = getTable('Sello');
+                const exists = sellos.some(s => s.id_pasaporte === data.id_pasaporte && s.id_establecimiento === data.id_establecimiento);
+                if (exists) return null;
+                const newSello = {
+                    id_pasaporte: data.id_pasaporte,
+                    id_establecimiento: data.id_establecimiento,
+                    fecha_sello: data.fecha_sello || new Date().toISOString(),
+                    activo: data.activo !== undefined ? data.activo : 1
+                };
+                sellos.push(newSello);
+                saveTable('Sello', sellos);
+                return newSello;
+            }
+
+            function getSellosByPasaporte(id_pasaporte) {
+                const sellos = getTable('Sello');
+                return sellos.filter(s => s.id_pasaporte === id_pasaporte && s.activo === 1);
+            }
+
+            function deleteSello(id_pasaporte, id_establecimiento) {
+                let sellos = getTable('Sello');
+                const index = sellos.findIndex(s => s.id_pasaporte === id_pasaporte && s.id_establecimiento === id_establecimiento);
+                if (index !== -1) {
+                    sellos[index].activo = 0;
+                    saveTable('Sello', sellos);
+                    return true;
+                }
+                return false;
+            }
+
+            // Funciones para Notificacion
+            function addNotificacion(data) {
+                let notificaciones = getTable('Notificacion');
+                const newId = notificaciones.length > 0 ? Math.max(...notificaciones.map(n => n.id_notificacion)) + 1 : 1;
+                const newNotificacion = {
+                    id_notificacion: newId,
+                    tipo: data.tipo || '',
+                    descripcion: data.descripcion || '',
+                    activo: data.activo !== undefined ? data.activo : 1
+                };
+                notificaciones.push(newNotificacion);
+                saveTable('Notificacion', notificaciones);
+                return newNotificacion;
+            }
+
+            function getNotificacion(id) {
+                const notificaciones = getTable('Notificacion');
+                return notificaciones.find(n => n.id_notificacion === id);
+            }
+
+            function updateNotificacion(id, data) {
+                let notificaciones = getTable('Notificacion');
+                const index = notificaciones.findIndex(n => n.id_notificacion === id);
+                if (index !== -1) {
+                    notificaciones[index] = { ...notificaciones[index], ...data };
+                    saveTable('Notificacion', notificaciones);
+                    return notificaciones[index];
+                }
+                return null;
+            }
+
+            function deleteNotificacion(id) {
+                let notificaciones = getTable('Notificacion');
+                const index = notificaciones.findIndex(n => n.id_notificacion === id);
+                if (index !== -1) {
+                    notificaciones[index].activo = 0;
+                    saveTable('Notificacion', notificaciones);
+                    return true;
+                }
+                return false;
+            }
+
+            // Funciones para Mensaje
+            function addMensaje(data) {
+                let mensajes = getTable('Mensaje');
+                const exists = mensajes.some(m => m.id_pasaporte === data.id_pasaporte && m.id_notificacion === data.id_notificacion);
+                if (exists) return null;
+                const newMensaje = {
+                    id_pasaporte: data.id_pasaporte,
+                    id_notificacion: data.id_notificacion,
+                    fecha_entrega: data.fecha_entrega || new Date().toISOString(),
+                    estatus: data.estatus || 'no leido'
+                };
+                mensajes.push(newMensaje);
+                saveTable('Mensaje', mensajes);
+                return newMensaje;
+            }
+
+            function getMensajesByPasaporte(id_pasaporte) {
+                const mensajes = getTable('Mensaje');
+                return mensajes.filter(m => m.id_pasaporte === id_pasaporte);
+            }
+
+            function updateMensaje(id_pasaporte, id_notificacion, data) {
+                let mensajes = getTable('Mensaje');
+                const index = mensajes.findIndex(m => m.id_pasaporte === id_pasaporte && m.id_notificacion === id_notificacion);
+                if (index !== -1) {
+                    mensajes[index] = { ...mensajes[index], ...data };
+                    saveTable('Mensaje', mensajes);
+                    return mensajes[index];
+                }
+                return null;
+            }
+
+            initDB();
+
+            window.db = {
+                addPasaporte,
+                getPasaporte,
+                updatePasaporte,
+                deletePasaporte,
+                addEstablecimiento,
+                getEstablecimiento,
+                updateEstablecimiento,
+                deleteEstablecimiento,
+                addSello,
+                getSellosByPasaporte,
+                deleteSello,
+                addNotificacion,
+                getNotificacion,
+                updateNotificacion,
+                deleteNotificacion,
+                addMensaje,
+                getMensajesByPasaporte,
+                updateMensaje,
+                getTable,
+                getPasaporteByEmail
+            };
+
+            // Registro
+            const registerForm = document.getElementById('register-form');
+            const errorMessage = document.getElementById('error-message');
+            const successMessage = document.getElementById('success-message');
+            const qrCodeDiv = document.getElementById('qr-code');
+
+            const togglePassword = document.getElementById('toggle-password');
+            const passwordInput = document.getElementById('password');
+            togglePassword.addEventListener('click', () => {
+                const type = passwordInput.type === 'password' ? 'text' : 'password';
+                passwordInput.type = type;
+                togglePassword.classList.toggle('fa-eye');
+                togglePassword.classList.toggle('fa-eye-slash');
+            });
+
+            const toggleConfirmPassword = document.getElementById('toggle-confirm-password');
+            const confirmPasswordInput = document.getElementById('confirm-password');
+            toggleConfirmPassword.addEventListener('click', () => {
+                const type = confirmPasswordInput.type === 'password' ? 'text' : 'password';
+                confirmPasswordInput.type = type;
+                toggleConfirmPassword.classList.toggle('fa-eye');
+                toggleConfirmPassword.classList.toggle('fa-eye-slash');
+            });
+
+            registerForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                errorMessage.textContent = '';
+                successMessage.textContent = '';
+                qrCodeDiv.innerHTML = '';
+
+                const recaptchaResponse = grecaptcha.getResponse();
+                if (!recaptchaResponse) {
+                    errorMessage.textContent = 'Por favor, completa el reCAPTCHA.';
+                    return;
+                }
+
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value;
+                const confirmPassword = document.getElementById('confirm-password').value;
+                const tlf = document.getElementById('tlf').value.trim();
+
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    errorMessage.textContent = 'Formato de email inválido.';
+                    return;
+                }
+
+                const pasaportes = db.getTable('Pasaporte');
+                if (pasaportes.some(p => p.email === email && p.activo === 1)) {
+                    errorMessage.textContent = 'El email ya existe.';
+                    return;
+                }
+
+                if (password !== confirmPassword) {
+                    errorMessage.textContent = 'Las contraseñas no coinciden.';
+                    return;
+                }
+                if (!password) {
+                    errorMessage.textContent = 'La contraseña es obligatoria.';
+                    return;
+                }
+
+                const newPasaporte = db.addPasaporte({ email, password, tlf });
+                successMessage.textContent = 'Pasaporte creado exitosamente.';
+
+                const qrUrl = `airooc41n.github.io/miapp?email=${encodeURIComponent(email)}&Id=${newPasaporte.id_pasaporte}`;
+                new QRCode(qrCodeDiv, {
+                    text: qrUrl,
+                    width: 256,
+                    height: 256
+                });
+            });
+
+            // Login y pasaporte info
+            const loginForm = document.getElementById('login-form');
+            const loginError = document.getElementById('login-error');
+            const pasaporteInfo = document.getElementById('pasaporte-info');
+            const pasaporteEmail = document.getElementById('pasaporte-email');
+            const pasaporteFechaExpedicion = document.getElementById('pasaporte-fecha-expedicion');
+            const pasaporteFechaExpiracion = document.getElementById('pasaporte-fecha-expiracion');
+            const pasaporteSellos = document.getElementById('pasaporte-sellos');
+            const pasaporteQr = document.getElementById('pasaporte-qr');
+
+            const toggleLoginPassword = document.getElementById('toggle-login-password');
+            const loginPasswordInput = document.getElementById('login-password');
+            toggleLoginPassword.addEventListener('click', () => {
+                const type = loginPasswordInput.type === 'password' ? 'text' : 'password';
+                loginPasswordInput.type = type;
+                toggleLoginPassword.classList.toggle('fa-eye');
+                toggleLoginPassword.classList.toggle('fa-eye-slash');
+            });
+
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                loginError.textContent = '';
+
+                const recaptchaResponse = grecaptcha.getResponse();
+                if (!recaptchaResponse) {
+                    loginError.textContent = 'Por favor, completa el reCAPTCHA.';
+                    return;
+                }
+
+                const email = document.getElementById('login-email').value.trim();
+                const password = document.getElementById('login-password').value;
+
+                const pasaporte = db.getPasaporteByEmail(email);
+                if (!pasaporte || pasaporte.password !== password) {
+                    loginError.textContent = 'Credenciales inválidas.';
+                    return;
+                }
+
+                localStorage.setItem('currentPasaporteId', pasaporte.id_pasaporte);
+                loadPasaporteInfo();
+            });
+
+            function loadPasaporteInfo() {
+                const currentId = parseInt(localStorage.getItem('currentPasaporteId'));
+                if (!currentId) {
+                    loginForm.style.display = 'block';
+                    pasaporteInfo.style.display = 'none';
+                    return;
+                }
+                const pasaporte = db.getPasaporte(currentId);
+                if (!pasaporte) {
+                    logout();
+                    return;
+                }
+                loginForm.style.display = 'none';
+                pasaporteInfo.style.display = 'block';
+                pasaporteEmail.textContent = `Email: ${pasaporte.email}`;
+                pasaporteFechaExpedicion.textContent = `Fecha de Expedición: ${new Date(pasaporte.fecha_expedicion).toLocaleDateString()}`;
+                pasaporteFechaExpiracion.textContent = `Fecha de Expiración: ${new Date(pasaporte.fecha_expiracion).toLocaleDateString()}`;
+                const sellos = db.getSellosByPasaporte(currentId);
+                let sellosText = `Sellos: ${sellos.length}/4\n`;
+                sellos.forEach(sello => {
+                    const est = db.getEstablecimiento(sello.id_establecimiento);
+                    sellosText += `- ${est ? est.sede_social : 'Establecimiento desconocido'} (${new Date(sello.fecha_sello).toLocaleDateString()})\n`;
+                });
+                pasaporteSellos.textContent = sellosText;
+                pasaporteQr.innerHTML = '';
+                const qrUrl = `airooc41n.github.io/miapp?email=${encodeURIComponent(pasaporte.email)}&Id=${pasaporte.id_pasaporte}`;
+                new QRCode(pasaporteQr, {
+                    text: qrUrl,
+                    width: 256,
+                    height: 256
+                });
+            }
+
+            window.logout = function() {
+                localStorage.removeItem('currentPasaporteId');
+                loadPasaporteInfo();
+            };
+
+            // Función para cargar datos en admin
+            function loadAdminData() {
+                const tables = ['Pasaporte', 'Establecimiento', 'Sello', 'Notificacion', 'Mensaje'];
+                tables.forEach(tableName => {
+                    const data = db.getTable(tableName);
+                    const tableBody = document.getElementById(`${tableName.toLowerCase()}-table`).querySelector('tbody');
+                    tableBody.innerHTML = '';
+                    data.forEach(item => {
+                        const tr = document.createElement('tr');
+                        let fields = [];
+                        if (tableName === 'Pasaporte') {
+                            fields = [item.id_pasaporte, item.email, item.tlf, new Date(item.fecha_expedicion).toLocaleDateString(), new Date(item.fecha_expiracion).toLocaleDateString(), item.activo];
+                            tr.innerHTML = `
+                                <td>${item.id_pasaporte}</td>
+                                <td>${item.email}</td>
+                                <td>${item.tlf}</td>
+                                <td>${new Date(item.fecha_expedicion).toLocaleDateString()}</td>
+                                <td>${new Date(item.fecha_expiracion).toLocaleDateString()}</td>
+                                <td>${item.activo}</td>
+                                <td><i class="fas fa-trash delete-icon" onclick="deleteRecord('${tableName}', ${item.id_pasaporte})"></i></td>
+                            `;
+                        } else if (tableName === 'Establecimiento') {
+                            tr.innerHTML = `
+                                <td>${item.id_establecimiento}</td>
+                                <td>${item.email}</td>
+                                <td>${item.sede_social}</td>
+                                <td>${item.tlf}</td>
+                                <td>${item.ruta}</td>
+                                <td>${item.activo}</td>
+                                <td><i class="fas fa-trash delete-icon" onclick="deleteRecord('${tableName}', ${item.id_establecimiento})"></i></td>
+                            `;
+                        } else if (tableName === 'Sello') {
+                            tr.innerHTML = `
+                                <td>${item.id_pasaporte}</td>
+                                <td>${item.id_establecimiento}</td>
+                                <td>${new Date(item.fecha_sello).toLocaleDateString()}</td>
+                                <td>${item.activo}</td>
+                                <td><i class="fas fa-trash delete-icon" onclick="deleteRecord('${tableName}', '${item.id_pasaporte}_${item.id_establecimiento}')"></i></td>
+                            `;
+                        } else if (tableName === 'Notificacion') {
+                            tr.innerHTML = `
+                                <td>${item.id_notificacion}</td>
+                                <td>${item.tipo}</td>
+                                <td>${item.descripcion}</td>
+                                <td>${item.activo}</td>
+                                <td><i class="fas fa-trash delete-icon" onclick="deleteRecord('${tableName}', ${item.id_notificacion})"></i></td>
+                            `;
+                        } else if (tableName === 'Mensaje') {
+                            tr.innerHTML = `
+                                <td>${item.id_pasaporte}</td>
+                                <td>${item.id_notificacion}</td>
+                                <td>${new Date(item.fecha_entrega).toLocaleDateString()}</td>
+                                <td>${item.estatus}</td>
+                                <td><i class="fas fa-trash delete-icon" onclick="deleteRecord('${tableName}', '${item.id_pasaporte}_${item.id_notificacion}')"></i></td>
+                            `;
+                        }
+                        tableBody.appendChild(tr);
+                    });
+                });
+            }
+
+            // Función para borrar un registro con alerta
+            window.deleteRecord = function(tableName, id) {
+                if (confirm(`¿Estás seguro de borrar este registro de ${tableName}?`)) {
+                    if (tableName === 'Sello' || tableName === 'Mensaje') {
+                        const [id_pasaporte, id_other] = id.split('_');
+                        db.deleteSello(tableName === 'Sello' ? id_pasaporte : id_pasaporte, id_other);
+                    } else if (tableName === 'Pasaporte') {
+                        db.deletePasaporte(id);
+                    } else if (tableName === 'Establecimiento') {
+                        db.deleteEstablecimiento(id);
+                    } else if (tableName === 'Notificacion') {
+                        db.deleteNotificacion(id);
+                    }
+                    loadAdminData(); // Recargar datos
+                }
+            };
+
+            // Función para borrar todos los datos de una tabla con alerta
+            window.clearTable = function(tableName) {
+                if (confirm(`¿Estás seguro de borrar todos los datos de ${tableName}?`)) {
+                    localStorage.removeItem(tableName);
+                    initDB(); // Re-inicializar la tabla vacía
+                    loadAdminData(); // Recargar datos
+                }
+            };
+        });
+    </script>
+</body>
+</html>
