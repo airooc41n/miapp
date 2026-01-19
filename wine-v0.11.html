@@ -3,665 +3,419 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pasaporte del Vino</title>
+    <title>Pasaporte del Vino - v0.11</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <style>
-        /* CSS preservado y ampliado */
+        /* CSS ORIGINAL PRESERVADO */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; background-color: #f4f7fa; color: #333; }
         header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background-color: #5e0b15; color: white; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); position: fixed; width: 100%; top: 0; z-index: 1000; }
         .logo { font-size: 1.5em; font-weight: bold; }
         .hamburger { cursor: pointer; font-size: 1.8em; }
-        #menu { position: fixed; top: 0; right: -60%; width: 60%; height: 100%; background-color: #ffffff; box-shadow: -5px 0 15px rgba(0, 0, 0, 0.2); transition: right 0.5s ease-in-out; z-index: 2000; padding: 60px 20px 20px; overflow-y: auto; }
+        
+        #menu { position: fixed; top: 0; right: -60%; width: 60%; height: 100%; background-color: #ffffff; box-shadow: -5px 0 15px rgba(0, 0, 0, 0.2); transition: right 0.3s ease-in-out; z-index: 2000; padding: 60px 20px 20px; overflow-y: auto; }
         #menu.active { right: 0; }
         #menu .close { position: absolute; top: 15px; right: 20px; font-size: 1.8em; cursor: pointer; }
         #menu ul { list-style: none; }
-        #menu li { margin: 15px 0; }
-        #menu a { text-decoration: none; color: #333; font-size: 1.2em; display: block; padding: 10px; border-radius: 5px; transition: background 0.2s; }
-        #menu a:hover { background-color: #e9ecef; }
+        #menu li { margin: 15px 0; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        #menu a { text-decoration: none; color: #333; font-size: 1.1em; display: block; }
+        
         #overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); display: none; z-index: 1500; }
         #overlay.active { display: block; }
-        main { flex: 1; padding: 70px 20px 60px; overflow-y: auto; }
-        .page { display: none; text-align: center; }
-        .page.active { display: block; }
-        .page h1 { margin-bottom: 20px; color: #5e0b15; font-size: 2em; font-weight: 700; }
-        .page h2 { margin-top: 30px; color: #5e0b15; font-size: 1.5em; font-weight: 600; }
-        .page ul, .page ol, .page p { text-align: left; margin: 15px auto; max-width: 800px; line-height: 1.6; }
-        .page p { font-size: 1.1em; }
-        .cta-button { background-color: #5e0b15; color: white; padding: 15px 30px; font-size: 1.5em; border: none; border-radius: 5px; cursor: pointer; margin: 20px auto; display: block; transition: background-color 0.2s; }
-        .cta-button:hover { background-color: #480910; }
-        form { max-width: 400px; margin: 0 auto; text-align: left; }
-        label { display: block; margin-top: 15px; font-weight: bold; }
-        input[type="email"], input[type="password"], input[type="tel"], input[type="text"], textarea, select { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 5px; }
-        .password-container { position: relative; }
-        .password-container input { padding-right: 40px; width: 100%; box-sizing: border-box; }
-        .password-container i { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #999; }
-        button[type="submit"] { background-color: #5e0b15; color: white; padding: 10px; width: 100%; border: none; border-radius: 5px; margin-top: 20px; cursor: pointer; }
-        button[type="submit"]:hover { background-color: #480910; }
-        #error-message { color: red; margin-top: 10px; }
-        #success-message { color: green; margin-top: 10px; font-weight: bold; }
-        #qr-code { margin-top: 30px; display: flex; justify-content: center; align-items: center; flex-direction: column; }
-        #qr-code canvas, #qr-code img { border: 10px solid white; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        #context-menu { position: fixed; bottom: -50%; left: 0; width: 100%; height: 50%; background-color: #ffffff; box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.2); transition: bottom 0.5s ease-in-out; z-index: 2000; padding: 20px; overflow-y: auto; }
-        #context-menu.active { bottom: 0; }
-        #context-menu .close { position: absolute; top: 15px; right: 20px; font-size: 1.8em; cursor: pointer; }
-        #context-menu ul { list-style: none; }
-        #context-menu li { margin: 15px 0; }
-        #context-menu a { text-decoration: none; color: #333; font-size: 1.2em; display: block; padding: 10px; border-radius: 5px; transition: background 0.2s; }
-        #context-menu a:hover { background-color: #e9ecef; }
-        footer { display: flex; justify-content: space-around; align-items: center; padding: 15px; background-color: #5e0b15; color: white; position: fixed; width: 100%; bottom: 0; box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1); }
-        footer .icon { cursor: pointer; font-size: 1.5em; margin: 0 10px; transition: color 0.2s; }
-        footer .icon:hover { color: #ffd700; }
-        @media (max-width: 768px) { #menu { width: 80%; right: -80%; } #context-menu { height: 60%; bottom: -60%; } }
-        @media (min-width: 1024px) { main { max-width: 800px; margin: 0 auto; } }
-        .table-wrapper { margin-bottom: 40px; overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; background-color: white; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); border-radius: 8px; overflow: hidden; }
-        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd; }
-        th { background-color: #5e0b15; color: white; }
-        tr:hover { background-color: #f1f1f1; }
-        .delete-all-btn { background-color: #ff0000; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-bottom: 20px; }
-        .delete-all-btn:hover { background-color: #cc0000; }
-        .logout-btn { background-color: #5e0b15; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-top: 20px; }
-        .logout-btn:hover { background-color: #480910; }
-        .hero-section { background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 30px; }
-        .steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 20px 0; text-align: center; }
-        .step-card { background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-top: 4px solid #5e0b15; }
-        .step-card i { font-size: 2em; color: #5e0b15; margin-bottom: 10px; display: block; }
-        .step-card strong { display: block; margin-bottom: 5px; font-size: 1.1em; }
-        .action-btn { background: none; border: none; cursor: pointer; font-size: 1.2em; margin-right: 10px; color: #5e0b15; }
-        .action-btn:hover { color: #480910; }
-
-        /* ESTILOS PARA ESTABLECIMIENTOS */
-        .est-form-container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 30px; border-left: 5px solid #5e0b15; display: none; }
-        .toggle-form-btn { background-color: #2c3e50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-bottom: 20px; width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; }
-        .establecimientos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
-        .est-card { background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 3px 10px rgba(0,0,0,0.1); transition: transform 0.2s; display: flex; flex-direction: column; }
-        .est-card:hover { transform: translateY(-5px); }
-        .est-header { background-color: #5e0b15; color: white; padding: 15px; position: relative; }
-        .est-type-badge { position: absolute; top: 10px; right: 10px; background-color: #ffd700; color: #5e0b15; padding: 4px 10px; border-radius: 20px; font-size: 0.8em; font-weight: bold; text-transform: uppercase; }
-        .est-body { padding: 15px; flex: 1; text-align: left; }
-        .est-body h3 { margin-bottom: 10px; font-size: 1.2em; color: #333; }
-        .est-body p { font-size: 0.9em; color: #666; margin-bottom: 8px; margin-left: 0; }
-        .est-body i { width: 20px; color: #5e0b15; text-align: center; margin-right: 5px; }
-        .est-footer { padding: 10px 15px; background-color: #f9f9f9; border-top: 1px solid #eee; font-size: 0.8em; color: #999; text-align: right; display: flex; justify-content: space-between; align-items: center; }
         
-        /* BOTON DE SELLADO EN TARJETA */
-        .stamp-btn {
-            background-color: #27ae60;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.9em;
-            transition: background 0.3s;
-        }
-        .stamp-btn:hover { background-color: #219150; }
-        .stamp-btn:disabled { background-color: #95a5a6; cursor: not-allowed; }
-        .stamp-btn.login-required { background-color: #e67e22; }
+        main { flex: 1; padding: 80px 20px 80px; overflow-y: auto; }
+        .page { display: none; }
+        .page.active { display: block; }
+        
+        h1 { color: #5e0b15; margin-bottom: 15px; text-align: center; }
+        h2 { color: #5e0b15; margin: 20px 0 10px; font-size: 1.3em; }
+        p { line-height: 1.6; margin-bottom: 15px; text-align: justify; }
+        
+        .cta-button { background-color: #5e0b15; color: white; padding: 12px 20px; border: none; border-radius: 5px; cursor: pointer; width: 100%; font-size: 1.1em; margin-top: 10px; transition: background 0.3s; }
+        .cta-button:hover { background-color: #44080f; }
 
-        /* VISUALIZACION DE SELLOS EN MI PASAPORTE */
-        .stamp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 15px; margin-top: 20px; justify-items: center; }
-        .stamp-item {
-            width: 80px; height: 80px;
-            border: 3px solid #5e0b15;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #fff8e1;
-            color: #5e0b15;
-            font-size: 0.7em;
-            font-weight: bold;
-            text-align: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            padding: 5px;
-            transform: rotate(-10deg);
-            position: relative;
-        }
-        .stamp-item::after {
-            content: '✓';
-            position: absolute;
-            bottom: -5px;
-            right: -5px;
-            background: #27ae60;
-            color: white;
-            width: 25px;
-            height: 25px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2em;
-            border: 2px solid white;
-        }
-        .no-stamps { color: #777; font-style: italic; margin-top: 10px; }
+        form { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        label { display: block; margin: 10px 0 5px; font-weight: bold; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 10px; font-size: 1em; }
+        
+        .password-container { position: relative; }
+        .password-container i { position: absolute; right: 10px; top: 12px; cursor: pointer; color: #666; }
 
+        .est-card { background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-left: 5px solid #5e0b15; }
+        .est-card h3 { color: #5e0b15; margin-bottom: 5px; }
+        .est-card p { margin-bottom: 5px; font-size: 0.95em; }
+        .badge { background: #5e0b15; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.8em; float: right; }
+
+        footer { display: flex; justify-content: space-around; align-items: center; padding: 15px; background-color: #5e0b15; color: white; position: fixed; width: 100%; bottom: 0; box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1); }
+        footer i { font-size: 1.4em; cursor: pointer; }
+
+        .error { color: #d9534f; background: #f2dede; padding: 10px; border-radius: 4px; margin: 10px 0; display: none; }
+        .success { color: #3c763d; background: #dff0d8; padding: 10px; border-radius: 4px; margin: 10px 0; display: none; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; }
+        th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }
+        th { background: #5e0b15; color: white; }
     </style>
 </head>
 <body>
+
     <header>
         <div class="logo">Pasaporte del Vino</div>
-        <div class="hamburger">&#9776;</div>
+        <div class="hamburger" onclick="toggleMenu()">&#9776;</div>
     </header>
+
+    <div id="overlay" onclick="toggleMenu()"></div>
+
     <div id="menu">
-        <div class="close">&times;</div>
+        <div class="close" onclick="toggleMenu()">&times;</div>
         <ul>
-            <li><a href="?page=registrar">Registrar pasaporte</a></li>
-            <li><a href="?page=mipasaporte">Mi pasaporte</a></li>
-            <li><a href="?page=establecimientos">Establecimientos</a></li>
-            <li><a href="?page=admin">Admin</a></li>
+            <li><a href="#" onclick="showPage('inicio')"><i class="fas fa-home"></i> Inicio</a></li>
+            <li><a href="#" onclick="showPage('registrar')"><i class="fas fa-user-plus"></i> Nuevo Pasaporte</a></li>
+            <li><a href="#" onclick="showPage('mipasaporte')"><i class="fas fa-id-card"></i> Mi Pasaporte</a></li>
+            <li><a href="#" onclick="showPage('establecimientos')"><i class="fas fa-store"></i> Guía de Establecimientos</a></li>
+            <li><hr></li>
+            <li><a href="#" onclick="showPage('miestablecimiento')" style="color:#5e0b15; font-weight:bold;"><i class="fas fa-briefcase"></i> Mi Establecimiento</a></li>
+            <li><a href="#" onclick="showPage('admin')"><i class="fas fa-cog"></i> Administración</a></li>
         </ul>
     </div>
-    <div id="overlay"></div>
+
     <main>
-        <section id="inicio" class="page">
+        <section id="inicio" class="page active">
             <h1>Pasaporte Turístico del Vino</h1>
+            <h2>Vive el Enoturismo en Valladolid</h2>
+            <p>El Pasaporte del Vino es tu llave para descubrir las mejores bodegas, museos y experiencias enológicas de la provincia. Colecciona sellos visitando nuestros establecimientos adheridos y obtén recompensas exclusivas.</p>
             
-            <div class="hero-section">
-                <p>Descubre el enoturismo como nunca antes. Vive experiencias únicas, colecciona sellos en tu <strong>PASAPORTE TURÍSTICO DEL VINO</strong> y consigue premios exclusivos.</p>
-                <button class="cta-button" onclick="navigateTo('registrar')">Obtener Pasaporte</button>
-            </div>
+            <h3>¿Cómo funciona?</h3>
+            <p style="margin-bottom: 5px;"><strong>1. Regístrate:</strong> Obtén tu código QR personal.</p>
+            <p style="margin-bottom: 5px;"><strong>2. Visita:</strong> Acude a los establecimientos de la guía.</p>
+            <p style="margin-bottom: 5px;"><strong>3. Sella:</strong> Muestra tu QR al personal para que sellen tu visita.</p>
+            <p style="margin-bottom: 15px;"><strong>4. ¡Gana!:</strong> Al completar 4 sellos, recibirás un obsequio especial.</p>
 
-            <h2>¿Cómo funciona?</h2>
-            <div class="steps-grid">
-                <div class="step-card">
-                    <i class="fas fa-file-download"></i>
-                    <strong>1. Consíguelo</strong>
-                    <p>Descarga la hoja o regístrate en la app para obtener tu código QR.</p>
-                </div>
-                <div class="step-card">
-                    <i class="fas fa-wine-glass"></i>
-                    <strong>2. Visita</strong>
-                    <p>Acude a los establecimientos adheridos y disfruta de la experiencia.</p>
-                </div>
-                <div class="step-card">
-                    <i class="fas fa-certificate"></i>
-                    <strong>3. Sella</strong>
-                    <p>Pulsa "Obtener Sello" en la ficha del establecimiento cuando lo visites.</p>
-                </div>
-                <div class="step-card">
-                    <i class="fas fa-gift"></i>
-                    <strong>4. Gana</strong>
-                    <p>Recibe un lote de productos "Alimentos de Valladolid" GRATIS.</p>
-                </div>
-            </div>
-
-            <h2>Premios y Sorteos</h2>
-            <p>Con todas las hojas de sellado del Pasaporte turístico del Vino recibidos antes del <strong>30 de diciembre de 2025</strong>, se sortearán 4 experiencias de enoturismo, para dos personas, en las Rutas del Vino de la Provincia de Valladolid.</p>
-
-            <button class="cta-button" onclick="navigateTo('registrar')">Crear mi Pasaporte Ahora</button>
-            <div style="margin-top: 40px; font-size: 0.9em; color: #666;">
-                <h3 style="color: #666; font-size: 1.1em; margin-bottom: 10px;">Privacidad</h3>
-                <p>Sus datos serán tratados por la Diputación Provincial de Valladolid para la promoción de actividades turísticas.</p>
-            </div>
+            <button class="cta-button" onclick="showPage('registrar')">¡Empezar ahora!</button>
         </section>
 
         <section id="registrar" class="page">
-            <h1>Registrar pasaporte</h1>
-            <div id="registration-container">
-                <form id="register-form">
-                    <label for="email">Email:</label>
-                    <input type="email" id="email" required>
-                    <label for="password">Contraseña:</label>
-                    <div class="password-container">
-                        <input type="password" id="password" required>
-                        <i class="fas fa-eye" id="toggle-password"></i>
-                    </div>
-                    <label for="confirm-password">Confirmar Contraseña:</label>
-                    <div class="password-container">
-                        <input type="password" id="confirm-password" required>
-                        <i class="fas fa-eye" id="toggle-confirm-password"></i>
-                    </div>
-                    <label for="tlf">Teléfono (opcional):</label>
-                    <input type="tel" id="tlf">
-                    <div class="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"></div>
-                    <button type="submit">Crear Pasaporte</button>
-                </form>
-            </div>
-            <div id="error-message"></div>
-            <div id="success-message"></div>
-            <div id="qr-code"></div>
-            <div id="post-register-actions" style="display:none; margin-top: 20px;">
-                <button class="cta-button" onclick="navigateTo('mipasaporte')">Ir a Mi Pasaporte</button>
-            </div>
+            <h1>Nuevo Pasaporte</h1>
+            <p>Introduce tus datos para generar tu pasaporte digital gratuito.</p>
+            <form id="form-registro-turista">
+                <label>Email:</label>
+                <input type="email" id="tur-email" required>
+                <label>Contraseña:</label>
+                <div class="password-container">
+                    <input type="password" id="tur-pass" required>
+                    <i class="fas fa-eye" onclick="togglePass(this)"></i>
+                </div>
+                <label>Confirmar Contraseña:</label>
+                <div class="password-container">
+                    <input type="password" id="tur-pass-conf" required>
+                    <i class="fas fa-eye" onclick="togglePass(this)"></i>
+                </div>
+                <div class="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" style="margin: 15px 0;"></div>
+                <button type="submit" class="cta-button">Crear mi Pasaporte</button>
+            </form>
+            <div id="msg-reg-turista"></div>
         </section>
 
         <section id="mipasaporte" class="page">
-            <h1>Mi pasaporte</h1>
-            <form id="login-form" style="display: block;">
-                <label for="login-email">Email:</label>
-                <input type="email" id="login-email" required>
-                <label for="login-password">Contraseña:</label>
-                <div class="password-container">
-                    <input type="password" id="login-password" required>
-                    <i class="fas fa-eye" id="toggle-login-password"></i>
+            <h1>Mi Pasaporte</h1>
+            <div id="turista-auth">
+                <form id="form-login-turista">
+                    <h3>Acceso Turista</h3>
+                    <label>Email:</label>
+                    <input type="email" id="login-tur-email" required>
+                    <label>Contraseña:</label>
+                    <input type="password" id="login-tur-pass" required>
+                    <button type="submit" class="cta-button">Entrar</button>
+                </form>
+            </div>
+            <div id="turista-panel" style="display:none;">
+                <div style="text-align:center; background:white; padding:20px; border-radius:10px; box-shadow:0 4px 10px rgba(0,0,0,0.1);">
+                    <h2 id="display-tur-email"></h2>
+                    <div id="qrcode" style="display:flex; justify-content:center; margin:20px 0;"></div>
+                    <p style="text-align:center; font-size:0.9em; color:#666;">Presenta este código en el establecimiento.</p>
+                    <button class="cta-button" style="background:#777;" onclick="logout()">Cerrar Sesión</button>
                 </div>
-                <button type="submit">Iniciar Sesión</button>
-            </form>
-            <div id="login-error" style="color: red; margin-top: 10px;"></div>
-            
-            <div id="pasaporte-info" style="display: none;">
-                <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-                    <p id="pasaporte-email" style="font-weight: bold; color: #5e0b15;"></p>
-                    <p id="pasaporte-fecha-expedicion" style="font-size: 0.9em;"></p>
-                    <hr style="margin: 15px 0; border: 0; border-top: 1px solid #eee;">
-                    
-                    <h3 style="color: #5e0b15;">Mis Sellos (<span id="sello-count">0</span>)</h3>
-                    <div id="stamps-container" class="stamp-grid">
-                        </div>
-                    
-                    <div id="pasaporte-qr" style="display: flex; justify-content: center; margin-top: 30px;"></div>
-                </div>
-                <button class="logout-btn" onclick="logout()">Cerrar Sesión</button>
             </div>
         </section>
 
         <section id="establecimientos" class="page">
-            <h1>Nuestros Establecimientos</h1>
-            
-            <button class="toggle-form-btn" onclick="toggleEstForm()">
-                <i class="fas fa-plus-circle"></i> Añadir Nuevo Establecimiento
-            </button>
+            <h1>Guía de Establecimientos</h1>
+            <p>Estos son los lugares donde puedes obtener tus sellos:</p>
+            <div id="lista-publica-est"></div>
+        </section>
 
-            <div class="est-form-container" id="est-form-container">
-                <h3>Dar de alta establecimiento</h3>
-                <form id="establecimiento-form">
-                    <label for="est-nombre">Nombre del Establecimiento:</label>
-                    <input type="text" id="est-nombre" required placeholder="Ej. Bodegas Protos">
-                    <label for="est-tipo">Tipo:</label>
-                    <select id="est-tipo" required>
-                        <option value="Bodega">Bodega</option>
-                        <option value="Restaurante">Restaurante</option>
-                        <option value="Museo">Museo</option>
-                        <option value="Alojamiento">Alojamiento</option>
-                        <option value="Vinoteca">Vinoteca</option>
-                    </select>
-                    <label for="est-direccion">Dirección:</label>
-                    <input type="text" id="est-direccion" required placeholder="Calle, Localidad...">
-                    <label for="est-descripcion">Descripción Corta:</label>
-                    <textarea id="est-descripcion" rows="3" required placeholder="Breve descripción..."></textarea>
-                    <button type="submit">Guardar Establecimiento</button>
-                </form>
+        <section id="miestablecimiento" class="page">
+            <h1>Panel Profesional</h1>
+            
+            <div id="est-auth-options" style="text-align:center; margin-bottom:20px;">
+                <button class="cta-button" onclick="showEstForm('login')">Ya soy socio (Login)</button>
+                <button class="cta-button" style="background:#2c3e50;" onclick="showEstForm('registro')">Registrar mi Negocio</button>
             </div>
 
-            <div class="establecimientos-grid" id="establecimientos-list"></div>
+            <form id="form-registro-est" style="display:none;">
+                <h3>Alta de Establecimiento</h3>
+                <label>Email Profesional:</label>
+                <input type="email" id="est-email" required>
+                <label>Contraseña:</label>
+                <input type="password" id="est-pass" required>
+                <label>Confirmar Contraseña:</label>
+                <input type="password" id="est-pass-conf" required>
+                <hr style="margin:15px 0;">
+                <label>Nombre del Establecimiento:</label>
+                <input type="text" id="est-nombre" placeholder="Ej: Bodega Las Uvas" required>
+                <label>Tipo de Establecimiento:</label>
+                <select id="est-tipo">
+                    <option value="Bodega">Bodega</option>
+                    <option value="Restaurante">Restaurante</option>
+                    <option value="Alojamiento">Alojamiento</option>
+                    <option value="Vinoteca">Vinoteca</option>
+                    <option value="Museo">Museo</option>
+                </select>
+                <label>Dirección:</label>
+                <input type="text" id="est-dir" required>
+                <label>Breve Descripción:</label>
+                <textarea id="est-desc" rows="3"></textarea>
+                <button type="submit" class="cta-button">Registrar y Acceder</button>
+            </form>
+
+            <form id="form-login-est" style="display:none;">
+                <h3>Acceso Profesionales</h3>
+                <label>Email:</label>
+                <input type="email" id="login-est-email" required>
+                <label>Contraseña:</label>
+                <input type="password" id="login-est-pass" required>
+                <button type="submit" class="cta-button">Acceder al Panel</button>
+            </form>
+
+            <div id="est-panel" style="display:none; text-align:center;">
+                <div class="success" style="display:block;">Sesión iniciada: <strong id="display-est-nombre"></strong></div>
+                <div style="margin-top:30px; padding:30px; border:3px dashed #5e0b15; border-radius:15px; background:white;">
+                    <i class="fas fa-qrcode" style="font-size:3em; color:#5e0b15;"></i>
+                    <h2>Sellar Pasaporte</h2>
+                    <p>Usa esta opción cuando el cliente te muestre su código QR.</p>
+                    <button class="cta-button" onclick="alert('Cámara (v0.12)')"><i class="fas fa-camera"></i> Escanear QR</button>
+                </div>
+                <button class="cta-button" style="background:#777; margin-top:20px;" onclick="logoutEst()">Cerrar Sesión Profesional</button>
+            </div>
         </section>
 
         <section id="admin" class="page">
-            <h1>Admin</h1>
-            <div class="table-wrapper">
-                <h2>Pasaportes</h2>
-                <button class="delete-all-btn" onclick="clearTable('Pasaporte')">Borrar todos los pasaportes</button>
-                <table id="pasaporte-table">
-                    <thead><tr><th>ID</th><th>Email</th><th>Acciones</th></tr></thead>
-                    <tbody></tbody>
-                </table>
-            </div>
+            <h1>Panel de Control</h1>
+            <table id="table-admin">
+                <thead>
+                    <tr><th>Tipo</th><th>Nombre/Email</th></tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <button class="cta-button" style="background:#c0392b; margin-top:30px;" onclick="resetDB()">BORRAR TODO (Reset)</button>
         </section>
     </main>
 
     <footer>
-        <span class="icon home" title="Inicio" onclick="navigateTo('inicio')"><i class="fas fa-house"></i></span>
-        <span class="icon export" title="Exportar DB"><i class="fas fa-file-export"></i></span>
-        <span>2026-v1.1</span>
-        <span class="icon import" title="Importar DB"><i class="fas fa-file-import"></i></span>
-        <span class="icon options" title="Opciones" onclick="toggleContextMenu()"><i class="fas fa-ellipsis-v"></i></span>
+        <i class="fas fa-home" onclick="showPage('inicio')"></i>
+        <i class="fas fa-id-card" onclick="showPage('mipasaporte')"></i>
+        <i class="fas fa-store" onclick="showPage('establecimientos')"></i>
+        <i class="fas fa-bars" onclick="toggleMenu()"></i>
     </footer>
 
-    <div id="context-menu">
-        <div class="close" onclick="toggleContextMenu()">&times;</div>
-        <ul id="context-items"></ul>
-    </div>
-
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const hamburger = document.querySelector('.hamburger');
-            const menu = document.getElementById('menu');
-            const close = menu.querySelector('.close');
-            const overlay = document.getElementById('overlay');
-            const pages = document.querySelectorAll('.page');
-            const contextMenu = document.getElementById('context-menu');
-            const contextItems = document.getElementById('context-items');
+        // --- BASE DE DATOS Y ESTADO ---
+        const db = {
+            get: (key) => JSON.parse(localStorage.getItem(key) || '[]'),
+            save: (key, data) => localStorage.setItem(key, JSON.stringify(data))
+        };
 
-            function toggleMenu() {
+        // --- NAVEGACIÓN ---
+        function showPage(id) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            toggleMenu(false);
+            if(id === 'establecimientos') renderEstablecimientos();
+            if(id === 'admin') renderAdmin();
+            if(id === 'mipasaporte') checkTuristaSesion();
+            if(id === 'miestablecimiento') checkEstSesion();
+        }
+
+        function toggleMenu(force) {
+            const menu = document.getElementById('menu');
+            const overlay = document.getElementById('overlay');
+            if (force === false) {
+                menu.classList.remove('active');
+                overlay.classList.remove('active');
+            } else {
                 menu.classList.toggle('active');
                 overlay.classList.toggle('active');
             }
+        }
 
-            hamburger.addEventListener('click', toggleMenu);
-            close.addEventListener('click', toggleMenu);
-            overlay.addEventListener('click', toggleMenu);
+        function togglePass(icon) {
+            const input = icon.parentElement.querySelector('input');
+            input.type = input.type === 'password' ? 'text' : 'password';
+            icon.classList.toggle('fa-eye');
+            icon.classList.toggle('fa-eye-slash');
+        }
 
-            window.toggleContextMenu = function() {
-                contextMenu.classList.toggle('active');
-                overlay.classList.toggle('active');
-                loadContextItems();
-            };
+        // --- LÓGICA TURISTAS ---
+        document.getElementById('form-registro-turista').onsubmit = function(e) {
+            e.preventDefault();
+            const email = document.getElementById('tur-email').value;
+            const pass = document.getElementById('tur-pass').value;
+            const conf = document.getElementById('tur-pass-conf').value;
 
-            overlay.addEventListener('click', () => {
-                if (contextMenu.classList.contains('active')) toggleContextMenu();
-            });
+            if(pass !== conf) return alert("Las contraseñas no coinciden");
 
-            function loadContextItems() {
-                contextItems.innerHTML = '';
-                let items = ['Configuración', 'Ayuda'];
-                items.forEach(item => {
-                    const li = document.createElement('li');
-                    const a = document.createElement('a');
-                    a.textContent = item; a.href = '#';
-                    li.appendChild(a);
-                    contextItems.appendChild(li);
-                });
-            }
+            let turistas = db.get('Pasaporte');
+            if(turistas.find(t => t.email === email)) return alert("Email ya registrado");
 
-            window.navigateTo = function(page) {
-                history.pushState(null, '', `?page=${page}`);
-                loadPage();
-            };
-
-            function loadPage() {
-                const urlParams = new URLSearchParams(window.location.search);
-                const page = urlParams.get('page') || 'inicio';
-                pages.forEach(p => p.classList.remove('active'));
-                const activePage = document.getElementById(page);
-                if (activePage) activePage.classList.add('active');
-                
-                if (page === 'mipasaporte') loadPasaporteInfo();
-                if (page === 'admin') loadAdminData();
-                if (page === 'establecimientos') renderEstablecimientos();
-                
-                // Reset de formulario registro al entrar
-                if (page === 'registrar') {
-                    document.getElementById('register-form').style.display = 'block';
-                    document.getElementById('post-register-actions').style.display = 'none';
-                    document.getElementById('success-message').textContent = '';
-                    document.getElementById('qr-code').innerHTML = '';
-                }
-            }
-
-            window.addEventListener('popstate', loadPage);
+            const nuevo = { id: Date.now(), email, pass };
+            turistas.push(nuevo);
+            db.save('Pasaporte', turistas);
             
-            menu.querySelectorAll('a').forEach(link => {
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const href = new URL(link.href);
-                    navigateTo(href.searchParams.get('page'));
-                    toggleMenu();
-                });
-            });
+            alert("¡Pasaporte creado con éxito! Ya puedes entrar en 'Mi Pasaporte'");
+            showPage('mipasaporte');
+        };
 
-            /* --- DATABASE ENGINE (localStorage) --- */
-            function initDB() {
-                const tables = ['Pasaporte', 'Establecimiento', 'Sello', 'Notificacion', 'Mensaje'];
-                tables.forEach(t => {
-                    if (!localStorage.getItem(t)) localStorage.setItem(t, JSON.stringify([]));
-                });
-                if (JSON.parse(localStorage.getItem('Pasaporte')).length === 0) seedData();
-            }
-
-            function seedData() {
-                console.log("Cargando datos de prueba...");
-                let pasaportes = [];
-                for(let i=1; i<=9; i++) {
-                    pasaportes.push({
-                        id_pasaporte: i, email: `usuario${i}@ejemplo.com`, password: '123',
-                        fecha_expedicion: new Date().toISOString(), activo: 1
-                    });
-                }
-                localStorage.setItem('Pasaporte', JSON.stringify(pasaportes));
-
-                let establecimientos = [
-                    { nombre: "Bodegas Protos", tipo: "Bodega", direccion: "Peñafiel", descripcion: "Tradición y vanguardia bajo el castillo." },
-                    { nombre: "Museo Provincial del Vino", tipo: "Museo", direccion: "Castillo de Peñafiel", descripcion: "Un viaje por la historia del vino." },
-                    { nombre: "Restaurante El Lagar", tipo: "Restaurante", direccion: "Valladolid Centro", descripcion: "Gastronomía castellana y buenos vinos." },
-                    { nombre: "Bodegas Arzuaga", tipo: "Bodega", direccion: "Quintanilla de Onésimo", descripcion: "Enoturismo de lujo y naturaleza." },
-                    { nombre: "Asador Don Mauro", tipo: "Restaurante", direccion: "Plaza Mayor", descripcion: "El mejor lechazo de la ciudad." },
-                    { nombre: "Hotel & Spa Arzuaga", tipo: "Alojamiento", direccion: "Quintanilla", descripcion: "Descanso entre viñedos." }
-                ];
-
-                let estConId = establecimientos.map((e, index) => ({
-                    id_establecimiento: index + 1, ...e, fecha_alta: new Date().toISOString()
-                }));
-                localStorage.setItem('Establecimiento', JSON.stringify(estConId));
-            }
-
-            const getTable = (t) => JSON.parse(localStorage.getItem(t) || '[]');
-            const saveTable = (t, d) => localStorage.setItem(t, JSON.stringify(d));
-
-            window.db = {
-                getTable,
-                addPasaporte: (data) => {
-                    let ps = getTable('Pasaporte');
-                    const id = ps.length > 0 ? Math.max(...ps.map(p => p.id_pasaporte)) + 1 : 1;
-                    const n = { id_pasaporte: id, ...data, fecha_expedicion: new Date().toISOString(), activo: 1 };
-                    ps.push(n); saveTable('Pasaporte', ps); return n;
-                },
-                getPasaporte: (id) => getTable('Pasaporte').find(p => p.id_pasaporte === id),
-                getPasaporteByEmail: (e) => getTable('Pasaporte').find(p => p.email === e && p.activo === 1),
-                getSellosByPasaporte: (id) => getTable('Sello').filter(s => s.id_pasaporte === id && s.activo === 1),
-                checkSello: (passportId, estId) => {
-                    return getTable('Sello').some(s => s.id_pasaporte === passportId && s.id_establecimiento === estId && s.activo === 1);
-                },
-                addSello: (passportId, estId) => {
-                    let sellos = getTable('Sello');
-                    const id = sellos.length > 0 ? Math.max(...sellos.map(s => s.id_sello)) + 1 : 1;
-                    const n = { id_sello: id, id_pasaporte: passportId, id_establecimiento: estId, fecha: new Date().toISOString(), activo: 1 };
-                    sellos.push(n); saveTable('Sello', sellos); return n;
-                },
-                addEstablecimiento: (data) => {
-                    let ests = getTable('Establecimiento');
-                    const id = ests.length > 0 ? Math.max(...ests.map(e => e.id_establecimiento)) + 1 : 1;
-                    const n = { id_establecimiento: id, ...data, fecha_alta: new Date().toISOString() };
-                    ests.push(n); saveTable('Establecimiento', ests); return n;
-                }
-            };
-            initDB();
-
-            /* --- REGISTRO Y LOGIN --- */
-            const registerForm = document.getElementById('register-form');
-            registerForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const err = document.getElementById('error-message');
-                err.textContent = ''; 
-
-                // Fake Recaptcha check (simulado si no carga)
-                // if (typeof grecaptcha !== 'undefined' && !grecaptcha.getResponse()) { err.textContent = 'Completa el reCAPTCHA.'; return; }
-
-                const email = document.getElementById('email').value.trim();
-                const password = document.getElementById('password').value;
-                if (password !== document.getElementById('confirm-password').value) { err.textContent = 'Las contraseñas no coinciden.'; return; }
-                if (db.getTable('Pasaporte').some(p => p.email === email && p.activo === 1)) { err.textContent = 'El email ya existe.'; return; }
-
-                const newP = db.addPasaporte({ email, password, tlf: document.getElementById('tlf').value });
-                
-                registerForm.style.display = 'none';
-                document.getElementById('success-message').textContent = '¡Pasaporte creado con éxito!';
-                
-                const qrUrl = `user:${newP.id_pasaporte}`;
-                new QRCode(document.getElementById('qr-code'), { text: qrUrl, width: 200, height: 200 });
-                localStorage.setItem('currentPasaporteId', newP.id_pasaporte);
-                document.getElementById('post-register-actions').style.display = 'block';
-            });
-
-            const loginForm = document.getElementById('login-form');
-            loginForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const email = document.getElementById('login-email').value.trim();
-                const pass = document.getElementById('login-password').value;
-                const p = db.getPasaporteByEmail(email);
-                if (!p || p.password !== pass) { document.getElementById('login-error').textContent = 'Error de credenciales.'; return; }
-                localStorage.setItem('currentPasaporteId', p.id_pasaporte);
-                loadPasaporteInfo();
-            });
-
-            window.logout = () => { localStorage.removeItem('currentPasaporteId'); loadPasaporteInfo(); };
-
-            function loadPasaporteInfo() {
-                const id = parseInt(localStorage.getItem('currentPasaporteId'));
-                const info = document.getElementById('pasaporte-info');
-                const loginF = document.getElementById('login-form');
-                
-                if (!id) { loginF.style.display = 'block'; info.style.display = 'none'; return; }
-                
-                const p = db.getPasaporte(id);
-                if (!p) { logout(); return; }
-
-                loginF.style.display = 'none';
-                info.style.display = 'block';
-                document.getElementById('pasaporte-email').textContent = p.email;
-                document.getElementById('pasaporte-fecha-expedicion').textContent = `Miembro desde: ${new Date(p.fecha_expedicion).toLocaleDateString()}`;
-                
-                // Cargar Sellos
-                const sellos = db.getSellosByPasaporte(id);
-                document.getElementById('sello-count').textContent = sellos.length;
-                const stampsContainer = document.getElementById('stamps-container');
-                stampsContainer.innerHTML = '';
-                
-                if (sellos.length === 0) {
-                    stampsContainer.innerHTML = '<p class="no-stamps">Aún no tienes sellos. ¡Visita establecimientos!</p>';
-                } else {
-                    const allEsts = db.getTable('Establecimiento');
-                    sellos.forEach(s => {
-                        const est = allEsts.find(e => e.id_establecimiento === s.id_establecimiento);
-                        const div = document.createElement('div');
-                        div.className = 'stamp-item';
-                        div.title = `Conseguido el ${new Date(s.fecha).toLocaleDateString()}`;
-                        // Intentar poner iniciales o icono
-                        div.textContent = est ? est.nombre.substring(0, 8) + '...' : 'Vino'; 
-                        stampsContainer.appendChild(div);
-                    });
-                }
-
-                // Generar QR
-                const qrCont = document.getElementById('pasaporte-qr');
-                qrCont.innerHTML = '';
-                new QRCode(qrCont, { text: `user:${p.id_pasaporte}`, width: 200, height: 200 });
-            }
-
-            /* --- ESTABLECIMIENTOS & SELLADO --- */
-            window.toggleEstForm = () => {
-                const f = document.getElementById('est-form-container');
-                f.style.display = f.style.display === 'block' ? 'none' : 'block';
-            };
-
-            document.getElementById('establecimiento-form').addEventListener('submit', (e) => {
-                e.preventDefault();
-                db.addEstablecimiento({
-                    nombre: document.getElementById('est-nombre').value,
-                    tipo: document.getElementById('est-tipo').value,
-                    direccion: document.getElementById('est-direccion').value,
-                    descripcion: document.getElementById('est-descripcion').value
-                });
-                e.target.reset(); toggleEstForm(); renderEstablecimientos();
-            });
-
-            window.renderEstablecimientos = () => {
-                const list = document.getElementById('establecimientos-list');
-                list.innerHTML = '';
-                let ests = db.getTable('Establecimiento');
-                ests.sort((a, b) => new Date(b.fecha_alta) - new Date(a.fecha_alta));
-
-                const currentUserId = parseInt(localStorage.getItem('currentPasaporteId'));
-
-                ests.forEach(est => {
-                    const card = document.createElement('div');
-                    card.className = 'est-card';
-                    
-                    let iconClass = 'fa-building';
-                    if(est.tipo === 'Bodega') iconClass = 'fa-wine-bottle';
-                    else if(est.tipo === 'Restaurante') iconClass = 'fa-utensils';
-                    else if(est.tipo === 'Museo') iconClass = 'fa-landmark';
-                    
-                    // Lógica del botón de sellado
-                    let btnHtml = '';
-                    if (!currentUserId) {
-                        btnHtml = `<button class="stamp-btn login-required" onclick="navigateTo('mipasaporte')">Loguéate para sellar</button>`;
-                    } else {
-                        const hasSello = db.checkSello(currentUserId, est.id_establecimiento);
-                        if (hasSello) {
-                            btnHtml = `<button class="stamp-btn" disabled>¡Sellado!</button>`;
-                        } else {
-                            btnHtml = `<button class="stamp-btn" onclick="sellar(${est.id_establecimiento})">Obtener Sello Digital</button>`;
-                        }
-                    }
-
-                    card.innerHTML = `
-                        <div class="est-header">
-                            <i class="fas ${iconClass}" style="font-size: 2em; opacity: 0.8;"></i>
-                            <span class="est-type-badge">${est.tipo}</span>
-                        </div>
-                        <div class="est-body">
-                            <h3>${est.nombre}</h3>
-                            <p><i class="fas fa-map-marker-alt"></i> ${est.direccion}</p>
-                            <p>${est.descripcion}</p>
-                        </div>
-                        <div class="est-footer">
-                            <span>${new Date(est.fecha_alta).toLocaleDateString()}</span>
-                            ${btnHtml}
-                        </div>
-                    `;
-                    list.appendChild(card);
-                });
-            };
-
-            window.sellar = function(estId) {
-                const userId = parseInt(localStorage.getItem('currentPasaporteId'));
-                if (!userId) { alert("Debes iniciar sesión."); return; }
-                
-                if (db.checkSello(userId, estId)) {
-                    alert("Ya tienes este sello.");
-                    return;
-                }
-                
-                db.addSello(userId, estId);
-                alert("¡Sello conseguido! 🎉");
-                renderEstablecimientos(); // Refrescar botones
-            };
-
-            /* --- ADMIN --- */
-            window.loadAdminData = () => {
-                const tbody = document.querySelector('#pasaporte-table tbody');
-                tbody.innerHTML = '';
-                db.getTable('Pasaporte').forEach(p => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${p.id_pasaporte}</td>
-                        <td>${p.email}</td>
-                        <td>
-                            <button class="action-btn" onclick="impersonate(${p.id_pasaporte})" title="Ver como usuario"><i class="fas fa-eye"></i></button>
-                        </td>`;
-                    tbody.appendChild(tr);
-                });
-            };
-
-            window.impersonate = (id) => {
-                localStorage.setItem('currentPasaporteId', id);
-                navigateTo('mipasaporte');
-            };
-
-            window.clearTable = function(table) {
-                if (confirm(`¿Borrar todo ${table}?`)) {
-                    localStorage.setItem(table, JSON.stringify([]));
-                    loadAdminData();
-                }
-            };
+        document.getElementById('form-login-turista').onsubmit = function(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-tur-email').value;
+            const pass = document.getElementById('login-tur-pass').value;
+            const u = db.get('Pasaporte').find(t => t.email === email && t.pass === pass);
             
-            // Password toggle logic
-            document.querySelectorAll('.password-container i').forEach(icon => {
-                icon.addEventListener('click', function() {
-                    const input = this.previousElementSibling;
-                    input.type = input.type === 'password' ? 'text' : 'password';
-                    this.classList.toggle('fa-eye'); this.classList.toggle('fa-eye-slash');
-                });
-            });
+            if(u) {
+                localStorage.setItem('sesion_tur', JSON.stringify(u));
+                checkTuristaSesion();
+            } else alert("Credenciales incorrectas");
+        };
 
-            // Init
-            loadPage();
-        });
+        function checkTuristaSesion() {
+            const s = JSON.parse(localStorage.getItem('sesion_tur'));
+            const auth = document.getElementById('turista-auth');
+            const panel = document.getElementById('turista-panel');
+            if(s) {
+                auth.style.display = 'none';
+                panel.style.display = 'block';
+                document.getElementById('display-tur-email').innerText = s.email;
+                document.getElementById('qrcode').innerHTML = "";
+                new QRCode(document.getElementById('qrcode'), { text: "ID:"+s.id, width: 200, height: 200 });
+            } else {
+                auth.style.display = 'block';
+                panel.style.display = 'none';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('sesion_tur');
+            checkTuristaSesion();
+        }
+
+        // --- LÓGICA ESTABLECIMIENTOS ---
+        function showEstForm(tipo) {
+            document.getElementById('est-auth-options').style.display = 'none';
+            document.getElementById('form-registro-est').style.display = tipo === 'registro' ? 'block' : 'none';
+            document.getElementById('form-login-est').style.display = tipo === 'login' ? 'block' : 'none';
+        }
+
+        document.getElementById('form-registro-est').onsubmit = function(e) {
+            e.preventDefault();
+            const email = document.getElementById('est-email').value;
+            const pass = document.getElementById('est-pass').value;
+            const conf = document.getElementById('est-pass-conf').value;
+            
+            if(pass !== conf) return alert("Las contraseñas no coinciden");
+
+            let ests = db.get('Establecimientos');
+            if(ests.find(est => est.email === email)) return alert("Este email ya está en uso");
+
+            const nuevo = {
+                id: Date.now(),
+                email, pass,
+                nombre: document.getElementById('est-nombre').value,
+                tipo: document.getElementById('est-tipo').value,
+                direccion: document.getElementById('est-dir').value,
+                desc: document.getElementById('est-desc').value
+            };
+            ests.push(nuevo);
+            db.save('Establecimientos', ests);
+            localStorage.setItem('sesion_est', JSON.stringify(nuevo));
+            checkEstSesion();
+        };
+
+        document.getElementById('form-login-est').onsubmit = function(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-est-email').value;
+            const pass = document.getElementById('login-est-pass').value;
+            const est = db.get('Establecimientos').find(x => x.email === email && x.pass === pass);
+            
+            if(est) {
+                localStorage.setItem('sesion_est', JSON.stringify(est));
+                checkEstSesion();
+            } else alert("Error de acceso profesional");
+        };
+
+        function checkEstSesion() {
+            const s = JSON.parse(localStorage.getItem('sesion_est'));
+            const opts = document.getElementById('est-auth-options');
+            const reg = document.getElementById('form-registro-est');
+            const log = document.getElementById('form-login-est');
+            const panel = document.getElementById('est-panel');
+            
+            if(s) {
+                opts.style.display = 'none'; reg.style.display = 'none'; log.style.display = 'none';
+                panel.style.display = 'block';
+                document.getElementById('display-est-nombre').innerText = s.nombre;
+            } else {
+                opts.style.display = 'block'; panel.style.display = 'none';
+            }
+        }
+
+        function logoutEst() {
+            localStorage.removeItem('sesion_est');
+            checkEstSesion();
+        }
+
+        // --- RENDERIZADO ---
+        function renderEstablecimientos() {
+            const lista = document.getElementById('lista-publica-est');
+            lista.innerHTML = "";
+            const datos = db.get('Establecimientos');
+            if(datos.length === 0) lista.innerHTML = "<p>Aún no hay establecimientos registrados.</p>";
+            datos.forEach(e => {
+                lista.innerHTML += `
+                    <div class="est-card">
+                        <span class="badge">${e.tipo}</span>
+                        <h3>${e.nombre}</h3>
+                        <p><i class="fas fa-map-marker-alt"></i> ${e.direccion}</p>
+                        <p style="font-size:0.85em; color:#666;">${e.desc}</p>
+                    </div>
+                `;
+            });
+        }
+
+        function renderAdmin() {
+            const body = document.querySelector('#table-admin tbody');
+            body.innerHTML = "";
+            db.get('Pasaporte').forEach(t => {
+                body.innerHTML += `<tr><td>Turista</td><td>${t.email}</td></tr>`;
+            });
+            db.get('Establecimientos').forEach(e => {
+                body.innerHTML += `<tr style="color:#5e0b15"><td>Tienda</td><td>${e.nombre} (${e.email})</td></tr>`;
+            });
+        }
+
+        function resetDB() {
+            if(confirm("¿Seguro que quieres borrar todos los datos?")) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
+
+        // Datos iniciales si está vacío
+        if(db.get('Establecimientos').length === 0) {
+            db.save('Establecimientos', [{id:1, nombre:'Bodega Demo', tipo:'Bodega', direccion:'Valladolid', email:'admin@test.com', pass:'123', desc:'Sitio de prueba'}]);
+        }
     </script>
 </body>
 </html>
