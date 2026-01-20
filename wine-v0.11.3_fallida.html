@@ -175,6 +175,80 @@ margin: 0 auto;
 margin-bottom: 20px;
 color: #5e0b15;
 }
+/* Estilos para escanear QR */
+.scan-container {
+position: relative;
+width: 100%;
+max-width: 500px;
+margin: 0 auto;
+}
+#video {
+width: 100%;
+height: auto;
+max-height: 400px;
+display: block;
+}
+#canvas {
+display: none;
+}
+#qr-result {
+margin-top: 15px;
+font-weight: bold;
+color: #28a745;
+}
+#scan-status {
+margin-top: 10px;
+font-weight: bold;
+color: #007bff;
+}
+#sellar-btn {
+margin-top: 15px;
+display: none;
+}
+/* Estilos para panel de establecimiento */
+.est-panel {
+background: white;
+padding: 20px;
+border-radius: 8px;
+box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+max-width: 800px;
+margin: 0 auto;
+}
+.est-stats {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+gap: 15px;
+margin: 20px 0;
+}
+.stat-card {
+background: #f8f9fa;
+padding: 15px;
+border-radius: 8px;
+text-align: center;
+}
+.stat-value {
+font-size: 2em;
+font-weight: bold;
+color: #5e0b15;
+}
+.stat-label {
+font-size: 0.9em;
+color: #6c757d;
+}
+.sellos-received-list {
+max-height: 300px;
+overflow-y: auto;
+margin-top: 20px;
+}
+/* Estilos para canjear premio */
+.premio-section {
+background: #d4edda;
+color: #155724;
+padding: 20px;
+border-radius: 8px;
+margin: 20px auto;
+max-width: 600px;
+}
 </style>
 </head>
 <body>
@@ -188,8 +262,8 @@ color: #5e0b15;
 <li><a href="?page=registrar">Registrar pasaporte</a></li>
 <li><a href="?page=mipasaporte">Mi pasaporte</a></li>
 <li><a href="?page=establecimientos">Establecimientos</a></li>
-<li><a href="?page=crear-establecimiento">Crear Establecimiento</a></li>
 <li><a href="?page=miestablecimiento">Mi Establecimiento</a></li>
+<li><a href="?page=escanearqr">Escanear QR</a></li>
 <li><a href="?page=admin">Admin</a></li>
 </ul>
 </div>
@@ -281,71 +355,80 @@ color: #5e0b15;
 <div id="pasaporte-info" style="display: none;">
 <p id="pasaporte-email"></p>
 <p id="pasaporte-fecha-expedicion"></p>
-<p id="pasaporte-fecha-expiracion"></p>
 <p id="pasaporte-sellos"></p>
+<div id="premio-section" style="display: none;"></div>
 <div id="pasaporte-qr" style="display: flex; justify-content: center; margin-top: 20px;"></div>
 <button class="logout-btn" onclick="logout()">Cerrar Sesión</button>
 </div>
 </section>
 <section id="establecimientos" class="page">
 <h1>Nuestros Establecimientos</h1>
-<!-- Botón eliminado según solicitud -->
 <div class="establecimientos-grid" id="establecimientos-list">
 </div>
 </section>
-<!-- Nueva sección: Crear Establecimiento (renombrada) -->
-<section id="crear-establecimiento" class="page">
-<h1>Crear Establecimiento</h1>
+<!-- Nueva sección: Mi Establecimiento -->
+<section id="miestablecimiento" class="page">
+<h1>Mi Establecimiento</h1>
 <div class="mi-establecimiento-form">
-<form id="crear-establecimiento-form">
-<label for="crear-est-nombre">Nombre del Establecimiento:</label>
-<input type="text" id="crear-est-nombre" required placeholder="Ej. Bodegas Familiares">
-<label for="crear-est-tipo">Tipo:</label>
-<select id="crear-est-tipo" required>
+<form id="mi-establecimiento-form">
+<label for="mi-est-nombre">Nombre del Establecimiento:</label>
+<input type="text" id="mi-est-nombre" required placeholder="Ej. Bodegas Familiares">
+<label for="mi-est-tipo">Tipo:</label>
+<select id="mi-est-tipo" required>
 <option value="Bodega">Bodega</option>
 <option value="Restaurante">Restaurante</option>
 <option value="Museo">Museo</option>
 <option value="Alojamiento">Alojamiento</option>
 <option value="Vinoteca">Vinoteca</option>
 </select>
-<label for="crear-est-direccion">Dirección:</label>
-<input type="text" id="crear-est-direccion" required placeholder="Calle, Localidad...">
-<label for="crear-est-descripcion">Descripción Corta:</label>
-<textarea id="crear-est-descripcion" rows="3" required placeholder="Breve descripción de la experiencia..."></textarea>
-<label for="crear-est-password">Contraseña:</label>
+<label for="mi-est-direccion">Dirección:</label>
+<input type="text" id="mi-est-direccion" required placeholder="Calle, Localidad...">
+<label for="mi-est-descripcion">Descripción Corta:</label>
+<textarea id="mi-est-descripcion" rows="3" required placeholder="Breve descripción de la experiencia..."></textarea>
+<label for="mi-est-password">Contraseña:</label>
 <div class="password-container">
-<input type="password" id="crear-est-password" required>
-<i class="fas fa-eye" id="toggle-crear-est-password"></i>
+<input type="password" id="mi-est-password" required>
+<i class="fas fa-eye" id="toggle-mi-est-password"></i>
 </div>
-<label for="crear-est-confirm-password">Confirmar Contraseña:</label>
+<label for="mi-est-confirm-password">Confirmar Contraseña:</label>
 <div class="password-container">
-<input type="password" id="crear-est-confirm-password" required>
-<i class="fas fa-eye" id="toggle-crear-est-confirm-password"></i>
+<input type="password" id="mi-est-confirm-password" required>
+<i class="fas fa-eye" id="toggle-mi-est-confirm-password"></i>
 </div>
 <button type="submit">Registrar Mi Establecimiento</button>
 </form>
 </div>
 </section>
-<!-- Nueva sección: Mi Establecimiento (renombrada) -->
-<section id="miestablecimiento" class="page">
-<h1>Mi Establecimiento</h1>
-<form id="login-establecimiento-form" style="max-width: 400px; margin: 0 auto; text-align: left;">
-<label for="est-login-nombre">Nombre del Establecimiento:</label>
-<input type="text" id="est-login-nombre" required placeholder="Ej. Bodegas Protos">
-<label for="est-login-password">Contraseña:</label>
-<div class="password-container">
-<input type="password" id="est-login-password" required>
-<i class="fas fa-eye" id="toggle-est-login-password"></i>
+<!-- Nueva sección: Escanear QR -->
+<section id="escanearqr" class="page">
+<h1>Escanear Pasaporte</h1>
+<div class="scan-container">
+<video id="video" autoplay playsinline></video>
+<canvas id="canvas"></canvas>
+<div id="qr-result">Resultado: <span id="result-text"></span></div>
+<div id="scan-status">Apuntando a un QR...</div>
+<button id="sellar-btn" class="cta-button" onclick="sellarPasaporte()">Sellar Pasaporte</button>
 </div>
-<button type="submit">Iniciar Sesión</button>
-</form>
-<div id="est-login-error" style="color: red; margin-top: 10px;"></div>
-<div id="establecimiento-info" style="display: none; margin-top: 30px; text-align: left; max-width: 500px; margin: 30px auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-<h2 id="est-info-nombre"></h2>
-<p><strong>Tipo:</strong> <span id="est-info-tipo"></span></p>
-<p><strong>Dirección:</strong> <span id="est-info-direccion"></span></p>
-<p><strong>Descripción:</strong> <span id="est-info-descripcion"></span></p>
-<p><strong>Fecha de alta:</strong> <span id="est-info-fecha"></span></p>
+</section>
+<!-- Nueva sección: Panel de Establecimiento -->
+<section id="estpanel" class="page">
+<h1>Panel de Establecimiento</h1>
+<div class="est-panel">
+<div id="est-info">
+<h2>Bienvenido, <span id="est-nombre-display"></span></h2>
+<div class="est-stats">
+<div class="stat-card">
+<div class="stat-value" id="sellos-count">0</div>
+<div class="stat-label">Sellos Recibidos</div>
+</div>
+<div class="stat-card">
+<div class="stat-value" id="visitas-count">0</div>
+<div class="stat-label">Visitantes Diferentes</div>
+</div>
+</div>
+</div>
+<h3>Sellos Recibidos Recientes</h3>
+<div class="sellos-received-list" id="sellos-list"></div>
 <button class="logout-btn" onclick="logoutEstablecimiento()">Cerrar Sesión</button>
 </div>
 </section>
@@ -356,18 +439,27 @@ color: #5e0b15;
 <button class="delete-all-btn" onclick="clearTable('Pasaporte')">Borrar todos los pasaportes</button>
 <table id="pasaporte-table">
 <thead>
-<tr><th>ID</th><th>Email</th><th>Acciones</th></tr>
+<tr><th>ID</th><th>Email</th><th>Sellos</th><th>Acciones</th></tr>
 </thead>
 <tbody></tbody>
 </table>
 </div>
-
 <div class="table-wrapper">
 <h2>Establecimientos</h2>
 <button class="delete-all-btn" onclick="clearTable('Establecimiento')">Borrar todos los establecimientos</button>
 <table id="establecimiento-table">
 <thead>
-<tr><th>ID</th><th>Nombre</th><th>Tipo</th><th>Dirección</th></tr>
+<tr><th>ID</th><th>Nombre</th><th>Tipo</th><th>Acciones</th></tr>
+</thead>
+<tbody></tbody>
+</table>
+</div>
+<div class="table-wrapper">
+<h2>Sellos</h2>
+<button class="delete-all-btn" onclick="clearTable('Sello')">Borrar todos los sellos</button>
+<table id="sello-table">
+<thead>
+<tr><th>ID</th><th>ID Pasaporte</th><th>ID Establecimiento</th><th>Fecha</th><th>Activo</th></tr>
 </thead>
 <tbody></tbody>
 </table>
@@ -376,9 +468,9 @@ color: #5e0b15;
 </main>
 <footer>
 <span class="icon home" title="Inicio" onclick="navigateTo('inicio')"><i class="fas fa-house"></i></span>
-<span class="icon export" title="Exportar DB"><i class="fas fa-file-export"></i></span>
+<span class="icon export" title="Exportar DB" onclick="exportDB()"><i class="fas fa-file-export"></i></span>
 <span>2026-v1.3</span>
-<span class="icon import" title="Importar DB"><i class="fas fa-file-import"></i></span>
+<span class="icon import" title="Importar DB" onclick="importDB()"><i class="fas fa-file-import"></i></span>
 <span class="icon options" title="Opciones" onclick="toggleContextMenu()"><i class="fas fa-ellipsis-v"></i></span>
 </footer>
 <div id="context-menu">
@@ -443,7 +535,8 @@ document.getElementById('error-message').textContent = '';
 document.getElementById('qr-code').innerHTML = '';
 if (typeof grecaptcha !== 'undefined') grecaptcha.reset();
 }
-// No hay lógica adicional necesaria para 'miestablecimiento' aún
+if (page === 'escanearqr') startScanner();
+if (page === 'estpanel') loadEstablecimientoPanel();
 }
 window.addEventListener('popstate', loadPage);
 loadPage();
@@ -523,7 +616,16 @@ const id = ests.length > 0 ? Math.max(...ests.map(e => e.id_establecimiento)) + 
 const n = { id_establecimiento: id, ...data, fecha_alta: new Date().toISOString() };
 ests.push(n); saveTable('Establecimiento', ests); return n;
 },
-getEstablecimientoByName: (nombre) => getTable('Establecimiento').find(e => e.nombre === nombre && e.activo !== 0)
+getEstablecimiento: (id) => getTable('Establecimiento').find(e => e.id_establecimiento === id),
+getEstablecimientoByNombre: (n) => getTable('Establecimiento').find(e => e.nombre === n),
+addSello: (data) => {
+let ss = getTable('Sello');
+const id = ss.length > 0 ? Math.max(...ss.map(s => s.id_sello)) + 1 : 1;
+const n = { id_sello: id, ...data, fecha: new Date().toISOString(), activo: 1 };
+ss.push(n); saveTable('Sello', ss); return n;
+},
+getSellosByEstablecimiento: (id) => getTable('Sello').filter(s => s.id_establecimiento === id && s.activo === 1),
+getSellosByPasaporteAndEstablecimiento: (pid, eid) => getTable('Sello').find(s => s.id_pasaporte === pid && s.id_establecimiento === eid && s.activo === 1)
 };
 initDB();
 /* LÓGICA DE REGISTRO PASAPORTE */
@@ -547,7 +649,7 @@ new QRCode(qrDiv, { text: qrUrl, width: 300, height: 300 });
 localStorage.setItem('currentPasaporteId', newP.id_pasaporte);
 document.getElementById('post-register-actions').style.display = 'block';
 });
-/* LÓGICA DE LOGIN PASAPORTE */
+/* LÓGICA DE LOGIN */
 const loginForm = document.getElementById('login-form');
 loginForm.addEventListener('submit', (e) => {
 e.preventDefault();
@@ -562,6 +664,7 @@ function loadPasaporteInfo() {
 const id = parseInt(localStorage.getItem('currentPasaporteId'));
 const info = document.getElementById('pasaporte-info');
 const loginF = document.getElementById('login-form');
+const premioSection = document.getElementById('premio-section');
 if (!id) {
 loginF.style.display = 'block';
 info.style.display = 'none';
@@ -576,6 +679,18 @@ loginF.style.display = 'none';
 info.style.display = 'block';
 document.getElementById('pasaporte-email').textContent = `Email: ${p.email}`;
 document.getElementById('pasaporte-fecha-expedicion').textContent = `Expedido: ${new Date(p.fecha_expedicion).toLocaleDateString()}`;
+const sellos = db.getSellosByPasaporte(id);
+const sellosCount = sellos.length;
+document.getElementById('pasaporte-sellos').textContent = `Sellos: ${sellosCount}`;
+// Contar sellos de establecimientos distintos
+const estIds = [...new Set(sellos.map(s => s.id_establecimiento))];
+const estDistintos = estIds.length;
+if (estDistintos >= 4) {
+premioSection.style.display = 'block';
+premioSection.innerHTML = '<div class="premio-section"><h3>¡Enhorabuena! Has conseguido 4 sellos diferentes.</h3><p>Puedes reclamar tu premio de productos "Alimentos de Valladolid".</p></div>';
+} else {
+premioSection.style.display = 'none';
+}
 const qrCont = document.getElementById('pasaporte-qr');
 qrCont.innerHTML = '';
 const qrUrl = `airooc41n.github.io/miapp?email=${encodeURIComponent(p.email)}&Id=${p.id_pasaporte}`;
@@ -587,8 +702,6 @@ localStorage.setItem('currentPasaporteId', id);
 navigateTo('mipasaporte');
 };
 /* LÓGICA ESTABLECIMIENTOS */
-// Función toggleEstForm eliminada porque ya no se usa
-/* RENDERIZADO DE ESTABLECIMIENTOS SIN FORMULARIO */
 window.renderEstablecimientos = () => {
 const list = document.getElementById('establecimientos-list');
 list.innerHTML = '';
@@ -621,94 +734,183 @@ Alta: ${new Date(est.fecha_alta).toLocaleDateString()}
 list.appendChild(card);
 });
 };
-/* LÓGICA CREAR ESTABLECIMIENTO */
-const crearEstForm = document.getElementById('crear-establecimiento-form');
-if (crearEstForm) {
-crearEstForm.addEventListener('submit', (e) => {
+/* LÓGICA MI ESTABLECIMIENTO */
+const miEstForm = document.getElementById('mi-establecimiento-form');
+if (miEstForm) {
+miEstForm.addEventListener('submit', (e) => {
 e.preventDefault();
-const nombre = document.getElementById('crear-est-nombre').value;
-const tipo = document.getElementById('crear-est-tipo').value;
-const direccion = document.getElementById('crear-est-direccion').value;
-const descripcion = document.getElementById('crear-est-descripcion').value;
-const password = document.getElementById('crear-est-password').value;
-const confirmPassword = document.getElementById('crear-est-confirm-password').value;
+const nombre = document.getElementById('mi-est-nombre').value;
+const tipo = document.getElementById('mi-est-tipo').value;
+const direccion = document.getElementById('mi-est-direccion').value;
+const descripcion = document.getElementById('mi-est-descripcion').value;
+const password = document.getElementById('mi-est-password').value;
+const confirmPassword = document.getElementById('mi-est-confirm-password').value;
 if (password !== confirmPassword) {
 alert('Las contraseñas no coinciden.');
 return;
 }
-// Verificar si ya existe
-const existing = db.getEstablecimientoByName(nombre);
-if (existing) {
-alert('Ya existe un establecimiento con ese nombre.');
-return;
-}
-db.addEstablecimiento({ nombre, tipo, direccion, descripcion, password });
+db.addEstablecimiento({
+nombre,
+tipo,
+direccion,
+descripcion,
+password // Guardamos la contraseña (en producción debería hashearla)
+});
 alert('¡Tu establecimiento ha sido registrado exitosamente!');
-crearEstForm.reset();
+miEstForm.reset();
 });
 }
-/* LÓGICA LOGIN ESTABLECIMIENTO */
-const loginEstForm = document.getElementById('login-establecimiento-form');
-if (loginEstForm) {
-loginEstForm.addEventListener('submit', (e) => {
-e.preventDefault();
-const nombre = document.getElementById('est-login-nombre').value.trim();
-const pass = document.getElementById('est-login-password').value;
-const est = db.getEstablecimientoByName(nombre);
-const errorDiv = document.getElementById('est-login-error');
-errorDiv.textContent = '';
-if (!est || est.password !== pass) {
-errorDiv.textContent = 'Nombre de establecimiento o contraseña incorrectos.';
+/* LÓGICA ESCANEAR QR Y SELLO */
+let scanningActive = false;
+let video;
+let canvas;
+let ctx;
+let scanResult = null;
+function startScanner() {
+scanningActive = true;
+video = document.getElementById('video');
+canvas = document.getElementById('canvas');
+ctx = canvas.getContext('2d');
+navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+.then(stream => {
+video.srcObject = stream;
+video.play();
+animateLoop();
+})
+.catch(err => {
+alert('No se pudo acceder a la cámara: ' + err.message);
+});
+}
+function animateLoop() {
+if (!scanningActive) return;
+if (video.readyState === video.HAVE_ENOUGH_DATA) {
+canvas.width = video.videoWidth;
+canvas.height = video.videoHeight;
+ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+const code = jsQR(imageData.data, imageData.width, imageData.height);
+if (code) {
+const rect = document.createElement('div');
+rect.style.position = 'absolute';
+rect.style.left = `${code.location.topLeftCorner.x}px`;
+rect.style.top = `${code.location.topLeftCorner.y}px`;
+rect.style.border = '2px solid #00FF00';
+rect.style.width = `${code.location.bottomRightCorner.x - code.location.topLeftCorner.x}px`;
+rect.style.height = `${code.location.bottomRightCorner.y - code.location.topLeftCorner.y}px`;
+rect.style.pointerEvents = 'none';
+rect.style.zIndex = '1000';
+// Limpiar marcadores anteriores
+const existingMarkers = document.querySelectorAll('.qr-marker');
+existingMarkers.forEach(el => el.remove());
+rect.classList.add('qr-marker');
+document.querySelector('.scan-container').appendChild(rect);
+// Mostrar resultado
+document.getElementById('result-text').textContent = code.data;
+document.getElementById('scan-status').textContent = 'QR detectado. Haga clic en "Sellar Pasaporte".';
+document.getElementById('sellar-btn').style.display = 'block';
+scanResult = code.data;
+} else {
+document.getElementById('scan-status').textContent = 'Buscando QR...';
+document.getElementById('sellar-btn').style.display = 'none';
+}
+}
+requestAnimationFrame(animateLoop);
+}
+window.sellarPasaporte = () => {
+if (!scanResult) {
+alert('No hay ningún QR escaneado.');
 return;
 }
-// Guardar sesión
-localStorage.setItem('currentEstablecimientoId', est.id_establecimiento);
-showEstablecimientoInfo(est);
+// Parsear el QR: airooc41n.github.io/miapp?email=...&Id=...
+const urlParams = new URLSearchParams(scanResult);
+const idPasaporte = urlParams.get('Id');
+if (!idPasaporte) {
+alert('QR no válido: no se encontró el ID del pasaporte.');
+return;
+}
+const currentEstId = parseInt(localStorage.getItem('currentEstablecimientoId'));
+if (!currentEstId) {
+alert('Debe iniciar sesión como establecimiento para sellar pasaportes.');
+navigateTo('miestablecimiento');
+return;
+}
+// Verificar si ya existe un sello de este pasaporte para este establecimiento
+if (db.getSellosByPasaporteAndEstablecimiento(parseInt(idPasaporte), currentEstId)) {
+alert('Este pasaporte ya tiene un sello de este establecimiento.');
+return;
+}
+// Crear el sello
+db.addSello({
+id_pasaporte: parseInt(idPasaporte),
+id_establecimiento: currentEstId
 });
-}
-function showEstablecimientoInfo(est) {
-document.getElementById('login-establecimiento-form').style.display = 'none';
-document.getElementById('est-login-error').textContent = '';
-document.getElementById('establecimiento-info').style.display = 'block';
-document.getElementById('est-info-nombre').textContent = est.nombre;
-document.getElementById('est-info-tipo').textContent = est.tipo;
-document.getElementById('est-info-direccion').textContent = est.direccion;
-document.getElementById('est-info-descripcion').textContent = est.descripcion;
-document.getElementById('est-info-fecha').textContent = new Date(est.fecha_alta).toLocaleDateString();
-}
-function logoutEstablecimiento() {
-localStorage.removeItem('currentEstablecimientoId');
-document.getElementById('establecimiento-info').style.display = 'none';
-document.getElementById('login-establecimiento-form').style.display = 'block';
-document.getElementById('est-login-error').textContent = '';
-}
-// Cargar info si hay sesión activa
-if (localStorage.getItem('currentEstablecimientoId')) {
+alert('¡Pasaporte sellado correctamente!');
+// Resetear escaneo
+scanResult = null;
+document.getElementById('result-text').textContent = '';
+document.getElementById('scan-status').textContent = 'Apuntando a un QR...';
+document.getElementById('sellar-btn').style.display = 'none';
+// Remover el marcador
+const marker = document.querySelector('.qr-marker');
+if (marker) marker.remove();
+};
+/* LÓGICA PANEL ESTABLECIMIENTO */
+function loadEstablecimientoPanel() {
 const id = parseInt(localStorage.getItem('currentEstablecimientoId'));
-const est = db.getTable('Establecimiento').find(e => e.id_establecimiento === id);
-if (est) {
-showEstablecimientoInfo(est);
-document.getElementById('login-establecimiento-form').style.display = 'none';
+if (!id) {
+alert('Debe iniciar sesión como establecimiento.');
+navigateTo('miestablecimiento');
+return;
 }
+const est = db.getEstablecimiento(id);
+if (!est) {
+alert('Establecimiento no encontrado.');
+logoutEstablecimiento();
+return;
 }
-/* TOGGLE VISIBILIDAD CONTRASEÑAS */
-document.querySelectorAll('.password-container i').forEach(icon => {
-icon.addEventListener('click', function() {
-const input = this.previousElementSibling;
-input.type = input.type === 'password' ? 'text' : 'password';
-this.classList.toggle('fa-eye'); this.classList.toggle('fa-eye-slash');
+document.getElementById('est-nombre-display').textContent = est.nombre;
+// Contar sellos recibidos
+const sellos = db.getSellosByEstablecimiento(id);
+document.getElementById('sellos-count').textContent = sellos.length;
+// Contar visitas únicas (pasaportes diferentes)
+const pasaportesUnicos = [...new Set(sellos.map(s => s.id_pasaporte))];
+document.getElementById('visitas-count').textContent = pasaportesUnicos.length;
+// Mostrar lista de sellos
+const list = document.getElementById('sellos-list');
+list.innerHTML = '';
+if (sellos.length === 0) {
+list.innerHTML = '<p>No hay sellos recibidos aún.</p>';
+return;
+}
+// Ordenar por fecha descendente
+sellos.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+sellos.slice(0, 10).forEach(s => {
+const div = document.createElement('div');
+div.style.padding = '10px';
+div.style.borderBottom = '1px solid #eee';
+div.innerHTML = `
+<div><strong>ID Pasaporte:</strong> ${s.id_pasaporte}</div>
+<div><strong>Fecha:</strong> ${new Date(s.fecha).toLocaleString()}</div>
+`;
+list.appendChild(div);
 });
-});
+}
+window.logoutEstablecimiento = () => {
+localStorage.removeItem('currentEstablecimientoId');
+navigateTo('miestablecimiento');
+};
 /* LÓGICA ADMIN */
 window.loadAdminData = () => {
 // Cargar pasaportes
 const tbodyP = document.querySelector('#pasaporte-table tbody');
 tbodyP.innerHTML = '';
 db.getTable('Pasaporte').forEach(p => {
+const sellos = db.getSellosByPasaporte(p.id_pasaporte);
 const tr = document.createElement('tr');
 tr.innerHTML = `
 <td>${p.id_pasaporte}</td>
 <td>${p.email}</td>
+<td>${sellos.length}</td>
 <td>
 <button class="action-btn" onclick="verPasaporte(${p.id_pasaporte})" title="Ver Pasaporte">
 <i class="fas fa-eye"></i>
@@ -716,7 +918,6 @@ tr.innerHTML = `
 </td>`;
 tbodyP.appendChild(tr);
 });
-
 // Cargar establecimientos
 const tbodyE = document.querySelector('#establecimiento-table tbody');
 tbodyE.innerHTML = '';
@@ -726,9 +927,75 @@ tr.innerHTML = `
 <td>${e.id_establecimiento}</td>
 <td>${e.nombre}</td>
 <td>${e.tipo}</td>
-<td>${e.direccion}</td>`;
+<td>
+<button class="action-btn" onclick="alert('Nombre: ${e.nombre}\\nTipo: ${e.tipo}\\nDirección: ${e.direccion}')">
+<i class="fas fa-info-circle"></i>
+</button>
+</td>`;
 tbodyE.appendChild(tr);
 });
+// Cargar sellos
+const tbodyS = document.querySelector('#sello-table tbody');
+tbodyS.innerHTML = '';
+db.getTable('Sello').forEach(s => {
+const tr = document.createElement('tr');
+tr.innerHTML = `
+<td>${s.id_sello}</td>
+<td>${s.id_pasaporte}</td>
+<td>${s.id_establecimiento}</td>
+<td>${new Date(s.fecha).toLocaleString()}</td>
+<td>${s.activo ? 'Sí' : 'No'}</td>
+`;
+tbodyS.appendChild(tr);
+});
+};
+// Toggle de visibilidad de contraseñas
+document.querySelectorAll('.password-container i').forEach(icon => {
+icon.addEventListener('click', function() {
+const input = this.previousElementSibling;
+input.type = input.type === 'password' ? 'text' : 'password';
+this.classList.toggle('fa-eye'); this.classList.toggle('fa-eye-slash');
+});
+});
+// Exportar DB
+window.exportDB = () => {
+const data = {};
+const keys = Object.keys(localStorage);
+keys.forEach(key => {
+data[key] = localStorage.getItem(key);
+});
+const dataStr = JSON.stringify(data, null, 2);
+const blob = new Blob([dataStr], {type: 'application/json'});
+const url = URL.createObjectURL(blob);
+const a = document.createElement('a');
+a.href = url;
+a.download = 'pasaporte_vino_db.json';
+a.click();
+URL.revokeObjectURL(url);
+};
+// Importar DB
+window.importDB = () => {
+const input = document.createElement('input');
+input.type = 'file';
+input.accept = 'application/json';
+input.onchange = e => {
+const file = e.target.files[0];
+const reader = new FileReader();
+reader.onload = event => {
+try {
+const data = JSON.parse(event.target.result);
+Object.keys(data).forEach(key => {
+localStorage.setItem(key, data[key]);
+});
+alert('Base de datos importada correctamente. La aplicación se va a recargar.');
+location.reload();
+} catch (err) {
+alert('Error al leer el archivo: ' + err.message);
+}
+};
+reader.readAsText(file);
+};
+input.click();
 };
 });
 window.clearTable = function(table) {
