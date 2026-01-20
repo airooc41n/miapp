@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Hoteles Provincia de Valladolid</title>
+
+    <!-- Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+    <!-- MarkerCluster -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: system-ui, Arial, sans-serif;
+        }
+
+        #map {
+            height: 100vh;
+            width: 100%;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 330px;
+            height: 100%;
+            background: #ffffff;
+            box-shadow: 2px 0 8px rgba(0,0,0,0.15);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Sticky header */
+        .sidebar-header {
+            position: sticky;
+            top: 0;
+            background: #ffffff;
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+            z-index: 10;
+        }
+
+        .sidebar-header h2 {
+            margin: 0 0 10px 0;
+            font-size: 18px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 8px 10px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        /* Hotel list */
+        .hotel-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .hotel-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+
+        .hotel-item:hover {
+            background: #f2f6fa;
+        }
+
+        .stars {
+            color: #e6a700;
+            font-size: 13px;
+        }
+
+        /* Info panel */
+        .info-panel {
+            padding: 12px 15px;
+            background: #f7f7f7;
+            border-top: 1px solid #ddd;
+            font-size: 14px;
+        }
+
+        .hotel-image {
+            width: 100%;
+            height: 160px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .hotel-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+                max-height: 50vh;
+                box-shadow: none;
+                border-bottom: 1px solid #ccc;
+            }
+
+            #map {
+                height: calc(100vh - 50vh);
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="sidebar-header">
+        <h2>Hoteles destacados</h2>
+        <input
+            type="text"
+            id="search"
+            class="search-input"
+            placeholder="Buscar por hotel o municipio…"
+        >
+    </div>
+
+    <div id="hotel-list" class="hotel-list"></div>
+
+    <div id="info-panel" class="info-panel">
+        <em>Haz clic en un hotel para ver detalles</em>
+    </div>
+</div>
+
+<div id="map"></div>
+
+<!-- JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+
+<script>
+    // Mapa con zoom a la derecha
+    const map = L.map('map', { zoomControl: false })
+        .setView([41.6523, -4.7245], 9);
+
+    L.control.zoom({ position: 'topright' }).addTo(map);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap'
+    }).addTo(map);
+
+    const hotels = [
+        {
+            name: "Castilla Termal Valbuena",
+            city: "Valbuena de Duero",
+            stars: 5,
+            lat: 41.6427,
+            lng: -4.2912,
+            image: "https://images.unsplash.com/photo-1566073771259-6a8506099945"
+        },
+        {
+            name: "Hotel Spa Arzuaga",
+            city: "Quintanilla de Onésimo",
+            stars: 5,
+            lat: 41.6418,
+            lng: -4.0083,
+            image: "https://images.unsplash.com/photo-1571896349842-33c89424de2d"
+        },
+        {
+            name: "Hotel Boutique Catedral",
+            city: "Valladolid",
+            stars: 4,
+            lat: 41.6565,
+            lng: -4.7238,
+            image: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb"
+        },
+        {
+            name: "Hotel Felipe IV",
+            city: "Valladolid",
+            stars: 4,
+            lat: 41.6509,
+            lng: -4.7188,
+            image: "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa"
+        },
+        {
+            name: "Hotel Olid",
+            city: "Valladolid",
+            stars: 4,
+            lat: 41.6521,
+            lng: -4.7290,
+            image: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267"
+        },
+        {
+            name: "Hotel Campo Grande",
+            city: "Valladolid",
+            stars: 4,
+            lat: 41.6466,
+            lng: -4.7202,
+            image: "https://images.unsplash.com/photo-1501117716987-c8e1ecb210b0"
+        },
+        {
+            name: "Hotel Silken Juan de Austria",
+            city: "Valladolid",
+            stars: 4,
+            lat: 41.6479,
+            lng: -4.7441,
+            image: "https://images.unsplash.com/photo-1560448075-bb485b067938"
+        },
+        {
+            name: "Hotel Enara",
+            city: "Valladolid",
+            stars: 4,
+            lat: 41.6527,
+            lng: -4.7215,
+            image: "https://images.unsplash.com/photo-1568495248636-6432b97bd949"
+        },
+        {
+            name: "Hotel El Montico",
+            city: "Tordesillas",
+            stars: 4,
+            lat: 41.7846,
+            lng: -4.8637,
+            image: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85"
+        },
+        {
+            name: "Hotel AF Pesquera",
+            city: "Peñafiel",
+            stars: 4,
+            lat: 41.6026,
+            lng: -4.1146,
+            image: "https://images.unsplash.com/photo-1505691723518-36a5ac3be353"
+        },
+        {
+            name: "Hotel Ribera del Duero",
+            city: "Peñafiel",
+            stars: 4,
+            lat: 41.5954,
+            lng: -4.1187,
+            image: "https://images.unsplash.com/photo-1560067174-894b5c5fcdde"
+        },
+        {
+            name: "Hotel Reina Isabel",
+            city: "Valladolid",
+            stars: 4,
+            lat: 41.6725,
+            lng: -4.7229,
+            image: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267"
+        },
+        {
+            name: "Hotel Foxá Valladolid",
+            city: "Valladolid",
+            stars: 4,
+            lat: 41.6510,
+            lng: -4.7242,
+            image: "https://images.unsplash.com/photo-1549294413-26f195200c16"
+        },
+        {
+            name: "Hotel Pisuerga",
+            city: "Valladolid",
+            stars: 4,
+            lat: 41.6678,
+            lng: -4.7395,
+            image: "https://images.unsplash.com/photo-1566073771259-6a8506099945"
+        },
+        {
+            name: "Hotel Conde Ansúrez",
+            city: "Valladolid",
+            stars: 3,
+            lat: 41.6569,
+            lng: -4.7223,
+            image: "https://images.unsplash.com/photo-1501117716987-c8e1ecb210b0"
+        },
+        {
+            name: "Hotel Torrelobatón",
+            city: "Torrelobatón",
+            stars: 3,
+            lat: 41.6473,
+            lng: -5.0248,
+            image: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267"
+        },
+        {
+            name: "Hotel Doña Elvira",
+            city: "Tordesillas",
+            stars: 3,
+            lat: 41.5022,
+            lng: -5.0003,
+            image: "https://images.unsplash.com/photo-1560448075-bb485b067938"
+        },
+        {
+            name: "Hotel La Vida",
+            city: "Medina del Campo",
+            stars: 3,
+            lat: 41.4473,
+            lng: -4.9955,
+            image: "https://images.unsplash.com/photo-1568495248636-6432b97bd949"
+        },
+        {
+            name: "Hotel Rural El Rincón",
+            city: "Peñafiel",
+            stars: 3,
+            lat: 41.5901,
+            lng: -4.5682,
+            image: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85"
+        },
+        {
+            name: "Hotel Lasa Sport",
+            city: "Valladolid",
+            stars: 4,
+            lat: 41.7012,
+            lng: -4.7975,
+            image: "https://images.unsplash.com/photo-1505691723518-36a5ac3be353"
+        }
+    ];
+
+    const cluster = L.markerClusterGroup();
+    const hotelList = document.getElementById('hotel-list');
+    const infoPanel = document.getElementById('info-panel');
+    const searchInput = document.getElementById('search');
+
+    function normalize(text) {
+        return text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    }
+
+    function starsHTML(n) {
+        return "★".repeat(n);
+    }
+
+    function render(list) {
+        hotelList.innerHTML = "";
+        cluster.clearLayers();
+
+        list.forEach(hotel => {
+            const marker = L.marker([hotel.lat, hotel.lng])
+                .bindTooltip(hotel.name)
+                .bindPopup(`<strong>${hotel.name}</strong><br>${hotel.city}<br>${starsHTML(hotel.stars)}`);
+
+            marker.on('click', () => showInfo(hotel));
+            cluster.addLayer(marker);
+
+            const item = document.createElement('div');
+            item.className = 'hotel-item';
+            item.innerHTML = `
+                <strong>${hotel.name}</strong><br>
+                <small>${hotel.city}</small><br>
+                <span class="stars">${starsHTML(hotel.stars)}</span>
+            `;
+
+            item.onclick = () => {
+                map.setView([hotel.lat, hotel.lng], 13);
+                marker.openPopup();
+                showInfo(hotel);
+            };
+
+            hotelList.appendChild(item);
+        });
+
+        map.addLayer(cluster);
+    }
+
+    function showInfo(hotel) {
+        infoPanel.innerHTML = `
+            <div class="hotel-image">
+                <img src="${hotel.image}" alt="Imagen de ${hotel.name}">
+            </div>
+            <strong>${hotel.name}</strong><br><br>
+            <b>Municipio:</b> ${hotel.city}<br>
+            <b>Categoría:</b> ${starsHTML(hotel.stars)}<br>
+            <b>Coordenadas:</b><br>
+            ${hotel.lat}, ${hotel.lng}
+        `;
+    }
+
+    searchInput.addEventListener('input', () => {
+        const value = normalize(searchInput.value);
+        const filtered = hotels.filter(h =>
+            normalize(h.name).includes(value) ||
+            normalize(h.city).includes(value)
+        );
+        render(filtered);
+    });
+
+    render(hotels);
+</script>
+
+</body>
+</html>
