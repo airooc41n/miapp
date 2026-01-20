@@ -76,9 +76,9 @@
     }
 
     /* ===== RESPONSIVE MÓVIL ===== */
-    @media (min-width: 601px) and (max-width: 1024px) {
+    @media (min-width: 1025px) {
         h1 {
-            font-size: 1.8rem;
+            font-size: 2rem;
         }
 
         .container {
@@ -88,6 +88,7 @@
 
         .grid {
             gap: 14px;
+          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
         }
 
         .app-img {
@@ -105,12 +106,7 @@
         }
     }
 
-    /* ===== MÓVIL: UNA COLUMNA ===== */
-    /*@media (max-width: 600px) {
-        .grid {
-            grid-template-columns: 1fr;
-        }
-    }*/
+
 </style>
 </head>
 <body>
