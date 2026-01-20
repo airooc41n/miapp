@@ -29,7 +29,7 @@
     /* ===== GRID MÁS RESPONSIVE ===== */
     .grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        grid-template-columns: 1fr; /* 1 columna por defecto */
         gap: 30px;
         justify-content: center;
     }
@@ -75,8 +75,7 @@
         word-break: break-word;
     }
 
-    /* ===== RESPONSIVE MÓVIL ===== */
-    @media (min-width: 1025px) {
+@media (min-width: 600px) {
         h1 {
             font-size: 3rem;
         }
@@ -88,7 +87,7 @@
 
         .grid {
             gap: 20px;
-            grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+            grid-template-columns: 1fr 1fr; /* 2 columnas */
         }
 
         .app-img {
