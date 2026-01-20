@@ -30,7 +30,7 @@
     .grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-        gap: 18px;
+        gap: 20px;
         justify-content: center;
     }
 
@@ -61,6 +61,7 @@
     }
 
     .app-title {
+        text-align: center;
         padding: 16px 18px 10px;
         font-size: 1.05rem;
         font-weight: 800;
@@ -75,7 +76,7 @@
     }
 
     /* ===== RESPONSIVE MÓVIL ===== */
-    @media (max-width: 600px) {
+    @media (min-width: 601px) and (max-width: 1024px) {
         h1 {
             font-size: 1.8rem;
         }
