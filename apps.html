@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Apps</title>
 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css  " integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
   <style>
     * {
@@ -63,6 +63,8 @@
       transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
       box-shadow: 0 8px 32px rgba(0,0,0,0.35);
       border: 1px solid rgba(255,255,255,0.08);
+      /* Nueva propiedad para ocultar desbordamientos del iframe */
+      contain: layout paint;
     }
 
     .card:hover {
@@ -74,19 +76,35 @@
       content: '';
       position: absolute;
       inset: 0;
-      background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.6));
-      opacity: 0.4;
+      /* Degradado de opacidad */
+      background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.7));
+      /* Opacidad inicial */
+      opacity: 0.6;
       transition: opacity 0.4s ease;
-      z-index: 1;
+      z-index: 2; /* Z-index superior al iframe pero inferior al contenido */
     }
 
     .card:hover::after {
-      opacity: 0.2;
+      opacity: 0.4; /* Reduce opacidad al hacer hover */
+    }
+
+    /* Nuevo contenedor para el iframe */
+    .preview-frame {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+      pointer-events: none; /* Permite que los clicks pasen a través */
+      z-index: 1; /* Z-index bajo para que esté detrás del overlay y el contenido */
+      /* Escala negativa para voltear horizontalmente */
+      transform: scaleX(-1);
     }
 
     .content {
       position: relative;
-      z-index: 2;
+      z-index: 3; /* Z-index superior para que el texto esté encima del overlay y el iframe */
       padding: 2rem;
       width: 100%;
     }
@@ -153,23 +171,23 @@
     const apps = [
       {
         title: "Map LeaFlet+OSV",
-        url: "https://airooc41n.github.io/miapp/"
+        url: "https://airooc41n.github.io/miapp/leaFlet-OSV"
       },
       {
         title: "Pste. Vino v0.10",
-        url: "https://airooc41n.github.io/miapp/"
+        url: "https://airooc41n.github.io/miapp/wine-v0.10.html"
       },
       {
-        title: "Pste. Vino v0.10",
-        url: "https://airooc41n.github.io/miapp/"
+        title: "Pste. Vino v0.11.1",
+        url: "https://airooc41n.github.io/miapp/wine-v0.11.1.html"
       },
       {
-        title: "Pste. Vino v0.10",
-        url: "https://airooc41n.github.io/miapp/"
+        title: "Pste. Vino v0.11.2",
+        url: "https://airooc41n.github.io/miapp/wine-v0.11.2.html"
       },
       {
-        title: "Pste. Vino v0.10",
-        url: "https://airooc41n.github.io/miapp/"
+        title: "Pste. Vino v0.11.3",
+        url: "https://airooc41n.github.io/miapp/wine-v0.11.3.html"
       },
       // Añade más cuando quieras...
       // {
@@ -188,12 +206,24 @@
       card.rel = "noopener noreferrer";
       card.className = "card";
 
-      card.innerHTML = `
-        <div class="content">
-          <div class="title">${app.title}</div>
-          <div class="arrow"><i class="fa-solid fa-arrow-up-right-from-square"></i></div>
-        </div>
+      // Crear el iframe para la vista previa
+      const iframe = document.createElement("iframe");
+      iframe.src = app.url;
+      iframe.title = `Vista previa de ${app.title}`;
+      iframe.className = "preview-frame";
+      // Opciones de sandbox para mayor seguridad y control
+      iframe.setAttribute("sandbox", "allow-scripts allow-same-origin");
+
+      // Contenido de texto (titulo y flecha)
+      const contentDiv = document.createElement("div");
+      contentDiv.className = "content";
+      contentDiv.innerHTML = `
+        <div class="title">${app.title}</div>
+        <div class="arrow"><i class="fa-solid fa-arrow-up-right-from-square"></i></div>
       `;
+
+      card.appendChild(iframe);
+      card.appendChild(contentDiv);
 
       grid.appendChild(card);
     });
@@ -201,3 +231,4 @@
 
 </body>
 </html>
+
