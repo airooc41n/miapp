@@ -98,8 +98,7 @@
       border: none;
       pointer-events: none; /* Permite que los clicks pasen a través */
       z-index: 1; /* Z-index bajo para que esté detrás del overlay y el contenido */
-      /* Escala negativa para voltear horizontalmente */
-      transform: scaleX(-1);
+      /* Eliminada la transformación scaleX(-1) para NO invertir la imagen */
     }
 
     .content {
@@ -114,7 +113,10 @@
       font-weight: 800;
       line-height: 1.15;
       letter-spacing: -0.5px;
-      text-shadow: 0 4px 20px rgba(0,0,0,0.6);
+      /* Texto más oscuro */
+      color: #ffffff;
+      /* Sombra más intensa y extendida */
+      text-shadow: 0 6px 25px rgba(0, 0, 0, 0.8), 0 0 10px rgba(0, 0, 0, 0.4);
     }
 
     .arrow {
@@ -171,23 +173,23 @@
     const apps = [
       {
         title: "Map LeaFlet+OSV",
-        url: "https://airooc41n.github.io/miapp/leaFlet-OSV"
+        url: "https://airooc41n.github.io/miapp/leaFlet-OSV.html"
       },
       {
         title: "Pste. Vino v0.10",
         url: "https://airooc41n.github.io/miapp/wine-v0.10.html"
       },
       {
-        title: "Pste. Vino v0.11.1",
-        url: "https://airooc41n.github.io/miapp/wine-v0.11.1.html"
+        title: "Pste. Vino v0.11.3",
+        url: "https://airooc41n.github.io/miapp/wine-v0.11.3.html"
       },
       {
         title: "Pste. Vino v0.11.2",
         url: "https://airooc41n.github.io/miapp/wine-v0.11.2.html"
       },
       {
-        title: "Pste. Vino v0.11.3",
-        url: "https://airooc41n.github.io/miapp/wine-v0.11.3.html"
+        title: "Pste. Vino v0.11.1",
+        url: "https://airooc41n.github.io/miapp/wine-v0.11.1.html"
       },
       // Añade más cuando quieras...
       // {
