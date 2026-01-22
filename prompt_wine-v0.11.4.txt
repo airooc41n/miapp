@@ -1,0 +1,77 @@
+Estructura general
+
+En la versión actual (`v0.11.3`):
+
+* Hay **7 páginas** (`inicio`, `registrar`, `mipasaporte`, `establecimientos`, `miestablecimiento`, `escanearqr`, `admin`).
+* El *footer* incluye botones de export/import DB, que no se mencionan ahora como parte visible.
+
+En la nueva versión (`v0.11.4`):
+
+* Confirmo que la página "escanear QR" desaparece del menú porque su funcionalidad se integrará en la página "Mi Establecimiento" después de login correcto
+* No deseo mantener las funciones de export/import DB dentro del menú contextual del footer pero que se pondrán en la página "Admin" con iconos visibles y texto
+
+---
+
+Página **Admin**
+
+* ¿Debe incluir directamente un **formulario de login** (email=[admin@admin.com](mailto:admin@admin.com) / passwd=admin) antes de acceder al CRUD?
+Si. Incluye el login vacío, pero creas un usuario admin@admin.com con passwd admin quizá en una nueva tabla "admin" para loguearnos después en pag "admin"
+* ¿El CRUD en página "admin" mantiene las tablas Pasaporte, Establecimiento, Sello con botones para visualizar, borrar y resetear todos los datos? 
+Sí. Sello sólo vista (no hace falta borrar registro, sí botón borrar todos los registros)
+* En la importación JSON de DB, ¿quieres que **se fusionen los datos** en lugar de sobrescribir (merge de arrays, sin duplicar IDs)?
+Sí
+
+---
+
+Página **Mi Establecimiento**
+
+* Confirmo que el *formulario de login* reemplaza al formulario de alta (ya que el alta lo hace el admin con el mismo formulario bajo una opción en un item en menú contextual).
+¿Quieres que, una vez logueado, el establecimiento vea su **panel (estadísticas y sellos)** *y* tenga el botón “Escanear QR” dentro de la misma página?
+Sí
+* ¿Deseas mantener el escaneo QR con la misma librería (`jsQR`)?
+Sí. Tanto la generación de QR como la lectura se harán con esta librería. 
+* Al escanear un pasaporte, ¿seguimos con la regla “un establecimiento solo puede sellar un pasaporte una vez” y “un pasaporte puede tener 4 sellos distintos”? (parece que sí, pero confirmo).
+Sí
+
+---
+
+Interfaz y usabilidad
+
+* ¿Quieres mantener el **header sticky** con el logo (icono de vino/pasaporte + menú hamburguesa)?
+Si. Pero puedes proponer otros diseños modernos y vistosos sin cambiar la funcionalidad
+* ¿El **footer sticky** debe tener únicamente:
+  🏠 Home (izquierda) | Versión (centro) | ⋮ Menú contextual (derecha)?
+  (sin los botones de export/import como en v0.11.3)
+  Sí. los botones y la funcionalidad de import/export pasan al menú contextual de la página de "Admin"
+* ¿Confirmas que el diseño debe ser **100% responsive mobile-first**, optimizado para pantallas pequeñas, sin barra de scroll visible (scroll natural entre header y footer)?
+Sí. 
+
+---
+
+Base de datos (localStorage)
+
+* ¿Deseas conservar las tablas:
+  `Pasaporte`, `Establecimiento`, `Sello`, `Notificacion`, `Mensaje`
+  o simplificamos a solo las necesarias (`Pasaporte`, `Establecimiento`, `Sello`)?
+  Sí. Creo que sería necesaria otra llamada Admin para contener las credenciales del usuario del admin para el login en página "Admin"
+* ¿Conservar los *datos de prueba (seed)* para demo?
+Sí. Sólo los de establecimiento para poder mostrar desde el inicio un listado nutrido de establecimientos en la pag "Establecimientos"
+
+---
+
+Diseño visual
+
+* ¿Mantenemos la misma **paleta principal** (#5e0b15, vino tinto) y estilo limpio tipo *card*?
+Sí. Pero puedes proponer un modo Claro/oscuro con un icono de sol/luna a la izquierda del icono del manú principal en header. 
+Tendrías que programar la funcionalidad del modo claro/oscuro.
+* ¿Quieres incorporar alguna **animación o mejora visual** (por ejemplo, animaciones suaves en scroll o carga de secciones SPA)?
+Sí.
+
+---
+
+* `wine-v0.11.4.html`: versión unificada, limpia, SPA completa y optimizada.
+* Código 100% funcional en un único fichero (HTML/CSS/JS).
+* Lista para probar localmente o en GitHub Pages, Codepen.io y otras soluciones.
+
+¿Te gustaría además que el nuevo fichero tenga comentarios en el código explicando cada bloque principal (para documentación técnica)?
+Sí. Importante
