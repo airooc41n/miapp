@@ -1,0 +1,31 @@
+Analiza el código que te comparto y procede únicamente con los cambios que te voy a proponer sin cambiar 
+nada más que lo estrictamente necesario y manteniendo en todo momento la consistencia de la aplicacion
+
+Modificaciones 
+
+1.- Crea los siguientes datos por defecto al inicio para para llenar la DB (localStorage)
+Tabla Pasaporte: crea 5 pasaportes con email=p1 y password=., email=p2 y password=. y así sucesivamente hasta 5 pasaportes
+Tabla Establecimiento: crea 20 establecimientos de distintos tipos con email=info@nombre-establecimiento.com y password=. y así sucesivamente hasta 20
+Table Sello: registra 3 sellos de 3 establecimientos diferentes existentes al pasaporte p1
+
+2.- Página Registrar pasaporte: no modificar nada
+
+3.- Página Mi pasaporte: no modificar nada
+
+4.- Página Establecimientos: ubicar el campo de texto del buscador sticky con icono lupa a su derecha en la parte inferior del contenido justo encima del footer. 
+Mantenemos la lista de establecimientos
+
+5.- Página Mi Establecimiento: 
+Una vez que un establecimiento se loguea correctamente:
+Generamos la funcionalidad del escaneo de QR para el sellado de pasaportes
+Para el scaneo de QR se presentará una ventana en formato cuadrado (no rectangular) que accederá a la cámara (usamos librería jsqr). 
+Cuando se detecta un QR y lee el contenido el borde de la ventana se pinta de verde (3px de grosor de borde), el contenido del QR se pinta en una label y ponemos sobrevolando la ventana de escaneo un botón redondo en verde con texto en Verde oscuro "Sellar", que sella el pasaporte con su email y el id del establecimiento.
+Verificar que el email existe en la tabla pasaportes antes de sellar y de no existir avisar que el pasaporte no existe. 
+En ese momento la tabla Sello escribirá un registro nuevo con el email del pasaporte (id del pasaporte unico en table pasaportes) y el id de establecimiento.
+Mostrar los datos datos del establecimiento en la parte inferior del contenido. 
+Una vez generado el sellado con éxito se alerta al establecimiento del sellado con éxito. 
+Cuando un pasaporte consigue sus 4 sellos le das la enhorabuena al pasaporte en su página de "Mi pasaporte" cuando el usuario de pasaporte hace login 
+
+6.- Página Admin: 
+Poner icono de ojo de visualización sobre los registros de establecimiento como los tiene pasaporte para ir directamente a la pagina "Mi establecimiento" saltando el login
+Poner los iconos de ojo (visualización de registro) a la izquierda antes del ID en las dos tablas; establecimiento y pasaporte
