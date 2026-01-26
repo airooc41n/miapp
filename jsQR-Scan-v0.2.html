@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Web App Escáner QR</title>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+    <style>
+        /* --- ESTILOS GENERALES --- */
+        :root {
+            --primary-color: #333;
+            --accent-green: #2ecc71;
+            --success-color: #27ae60;
+            --bg-color: #f4f4f9;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+            overflow: hidden; /* Evitar scroll mientras escanea */
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 30px;
+        }
+
+        /* --- BOTÓN PRINCIPAL --- */
+        .btn-main {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .btn-main:active {
+            transform: scale(0.95);
+        }
+
+        /* --- CONTENEDOR DE CÁMARA (MODAL) --- */
+        #scanner-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: none; /* Oculto por defecto */
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        /* La ventana cuadrada de la cámara */
+        #camera-window {
+            position: relative;
+            width: calc(100vw - 40px); /* 20px margen a cada lado */
+            height: calc(100vw - 40px); /* Cuadrado */
+            max-width: 500px;
+            max-height: 500px;
+            background-color: #000;
+            overflow: hidden;
+            border-radius: 12px;
+            border: 2px solid #555; /* Borde inicial */
+            transition: border 0.3s ease;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        /* Estado cuando detecta QR */
+        #camera-window.detected {
+            border: 5px solid var(--accent-green) !important;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* --- LABEL DE RESULTADO --- */
+        #qr-result-label {
+            color: white;
+            margin-top: 20px;
+            font-size: 1.1rem;
+            min-height: 1.5em;
+            padding: 0 20px;
+            word-break: break-all;
+        }
+
+        /* --- BOTÓN SELLAR --- */
+        #btn-sellar {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background-color: var(--success-color);
+            color: white;
+            border: 5px solid white;
+            font-weight: bold;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: none; /* Oculto hasta detectar */
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+            animation: popIn 0.3s ease-out;
+            z-index: 10;
+        }
+
+        @keyframes popIn {
+            0% { transform: translate(-50%, -50%) scale(0); }
+            80% { transform: translate(-50%, -50%) scale(1.1); }
+            100% { transform: translate(-50%, -50%) scale(1); }
+        }
+
+        /* --- MENSAJE DE ÉXITO --- */
+        #success-message {
+            display: none;
+            color: var(--success-color);
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            font-size: 1.2rem;
+            max-width: 80%;
+        }
+
+        #success-icon {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="home-screen">
+        <h1>Scan QR</h1>
+        <button class="btn-main" onclick="startScanning()">Escanear QR</button>
+    </div>
+
+    <div id="success-message">
+        <span id="success-icon">✅</span>
+        Su pasaporte ha sido sellado con éxito
+        <br><br>
+        <button class="btn-main" onclick="resetApp()" style="font-size: 0.9rem; padding: 10px 20px; background-color: #7f8c8d;">Volver</button>
+    </div>
+
+    <div id="scanner-overlay">
+        <div id="camera-window">
+            <canvas id="qr-canvas"></canvas>
+            <button id="btn-sellar" onclick="sellarPasaporte()">Sellar</button>
+        </div>
+        <div id="qr-result-label">Escaneando...</div>
+        <button onclick="stopScanning()" style="margin-top: 20px; background: transparent; border: 1px solid white; color: white; padding: 10px 20px; border-radius: 4px;">Cancelar</button>
+    </div>
+
+    <script>
+        // --- VARIABLES GLOBALES ---
+        const video = document.createElement("video");
+        const canvasElement = document.getElementById("qr-canvas");
+        const canvas = canvasElement.getContext("2d", { willReadFrequently: true });
+        const overlay = document.getElementById("scanner-overlay");
+        const cameraWindow = document.getElementById("camera-window");
+        const resultLabel = document.getElementById("qr-result-label");
+        const btnSellar = document.getElementById("btn-sellar");
+        const homeScreen = document.getElementById("home-screen");
+        const successMessage = document.getElementById("success-message");
+
+        let scanning = false;
+        let localStream = null;
+
+        // --- FUNCIONALIDAD DE ESCANEO ---
+        
+        function startScanning() {
+            // UI Reset
+            homeScreen.style.display = "none";
+            successMessage.style.display = "none";
+            overlay.style.display = "flex";
+            btnSellar.style.display = "none";
+            cameraWindow.classList.remove("detected");
+            resultLabel.innerText = "Buscando código QR...";
+            
+            scanning = true;
+
+            // Solicitar acceso a la cámara (preferiblemente trasera)
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+                .then(function(stream) {
+                    localStream = stream;
+                    video.srcObject = stream;
+                    video.setAttribute("playsinline", true); // Requerido para iOS
+                    video.play();
+                    requestAnimationFrame(tick);
+                })
+                .catch(function(err) {
+                    console.error("Error al acceder a la cámara", err);
+                    alert("No se pudo acceder a la cámara. Asegúrate de estar en HTTPS y dar permisos.");
+                    stopScanning();
+                });
+        }
+
+        function tick() {
+            if (!scanning) return;
+
+            if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                // Ajustar dimensiones del canvas al video
+                canvasElement.height = video.videoHeight;
+                canvasElement.width = video.videoWidth;
+                
+                // Dibujar el frame actual del video en el canvas
+                canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
+                
+                // Intentar decodificar QR
+                var imageData = canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
+                var code = jsQR(imageData.data, imageData.width, imageData.height, {
+                    inversionAttempts: "dontInvert",
+                });
+
+                if (code) {
+                    // --- QR DETECTADO ---
+                    
+                    // 1. Dibujar el recuadro verde alrededor del QR detectado
+                    drawQuad(code.location.topLeftCorner, code.location.topRightCorner, code.location.bottomRightCorner, code.location.bottomLeftCorner, "#00FF00");
+
+                    // 2. Bordes de la ventana en verde (5px)
+                    if (!cameraWindow.classList.contains("detected")) {
+                        cameraWindow.classList.add("detected");
+                    }
+
+                    // 3. Mostrar contenido en el label
+                    resultLabel.innerText = "Detectado: " + code.data;
+
+                    // 4. Mostrar botón Sellar
+                    if (btnSellar.style.display !== "block") {
+                        btnSellar.style.display = "block";
+                        // Feedback háptico si el móvil lo soporta
+                        if (window.navigator && window.navigator.vibrate) {
+                            window.navigator.vibrate(200);
+                        }
+                    }
+
+                } else {
+                    // --- NO HAY QR ---
+                    // Si perdemos el QR, decidimos si ocultar el botón o dejarlo. 
+                    // Para mejor UX, si ya lo detectó una vez, suelo dejarlo un momento, 
+                    // pero según tus requisitos estrictos de "En el momento que se detecta", 
+                    // limpiaré si se pierde el foco para que se vea el efecto "vivo".
+                    
+                    /* Opcional: Descomentar si quieres que el botón desaparezca si mueves la cámara */
+                    // btnSellar.style.display = "none";
+                    // cameraWindow.classList.remove("detected");
+                }
+            }
+            requestAnimationFrame(tick);
+        }
+
+        // Función auxiliar para dibujar líneas en el canvas
+        function drawLine(begin, end, color) {
+            canvas.beginPath();
+            canvas.moveTo(begin.x, begin.y);
+            canvas.lineTo(end.x, end.y);
+            canvas.lineWidth = 4;
+            canvas.strokeStyle = color;
+            canvas.stroke();
+        }
+
+        // Función para dibujar el recuadro completo
+        function drawQuad(tl, tr, br, bl, color) {
+            drawLine(tl, tr, color);
+            drawLine(tr, br, color);
+            drawLine(br, bl, color);
+            drawLine(bl, tl, color);
+        }
+
+        // --- ACCIONES DEL USUARIO ---
+
+        function stopScanning() {
+            scanning = false;
+            if (localStream) {
+                localStream.getTracks().forEach(track => track.stop());
+            }
+            overlay.style.display = "none";
+            homeScreen.style.display = "block";
+        }
+
+        function sellarPasaporte() {
+            // Detener escaneo
+            scanning = false;
+            if (localStream) {
+                localStream.getTracks().forEach(track => track.stop());
+            }
+            
+            // Ocultar cámara
+            overlay.style.display = "none";
+            
+            // Mostrar éxito
+            successMessage.style.display = "block";
+        }
+
+        function resetApp() {
+            successMessage.style.display = "none";
+            homeScreen.style.display = "block";
+        }
+    </script>
+</body>
+</html>
