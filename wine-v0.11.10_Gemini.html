@@ -677,10 +677,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function seedData() {
         let pasaportes = [];
-        for(let i=1; i<=5; i++) {
+        for(let i=1; i<=9; i++) {
             pasaportes.push({
                 id_pasaporte: i,
-                email: `p${i}`,
+                email: `p${i}@p.com`,
                 password: '.',
                 tlf: `60000000${i}`,
                 fecha_expedicion: new Date().toISOString(),
@@ -691,9 +691,9 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('Pasaporte', JSON.stringify(pasaportes));
         let establecimientos = [];
         const tipos = ["Bodega", "Restaurante", "Museo", "Alojamiento", "Vinoteca"];
-        for(let i=1; i<=20; i++) {
+        for(let i=1; i<=9; i++) {
             const tipo = tipos[(i-1) % tipos.length];
-            const nombre = `Establecimiento${i}`;
+            const nombre = `Establecimiento${i}@e.com`;
             establecimientos.push({
                 id_establecimiento: i,
                 nombre,
@@ -1369,4 +1369,5 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
+
 
