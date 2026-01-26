@@ -1,0 +1,1985 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GripesJS Studio Pro - Diseño Drag & Drop Avanzado</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #5c6bc0;
+            --primary-dark: #3f4f9e;
+            --primary-light: #8e99f3;
+            --secondary: #26a69a;
+            --success: #66bb6a;
+            --warning: #ffa726;
+            --danger: #ef5350;
+            --info: #29b6f6;
+            --dark: #263238;
+            --light: #f5f7fa;
+            --gray: #90a4ae;
+            --border: #cfd8dc;
+            --sidebar-bg: #2c3e50;
+            --code-bg: #1e1e1e;
+            --shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --radius: 8px;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+            padding: 10px;
+            overflow: hidden;
+        }
+
+        .app-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            height: 98vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            background: var(--dark);
+            color: white;
+            padding: 0 20px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary-light);
+        }
+
+        .logo i {
+            font-size: 1.6rem;
+            color: var(--info);
+        }
+
+        .controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #4caf50;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #e53935;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-light {
+            background: var(--light);
+            color: var(--dark);
+            border: 1px solid var(--border);
+        }
+
+        .btn-light:hover {
+            background: #e3f2fd;
+        }
+
+        /* Main Layout */
+        .main-layout {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Sidebar Left - Components */
+        .sidebar-left {
+            width: 280px;
+            background: var(--light);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .components-search {
+            padding: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .components-categories {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+        }
+
+        .category {
+            margin-bottom: 20px;
+        }
+
+        .category-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .components-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .component-item {
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            padding: 12px 8px;
+            text-align: center;
+            cursor: grab;
+            transition: var(--transition);
+            user-select: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .component-item:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .component-item i {
+            font-size: 1.4rem;
+            color: var(--primary);
+        }
+
+        .component-item span {
+            font-size: 0.8rem;
+            color: var(--dark);
+            font-weight: 500;
+        }
+
+        /* Design Area */
+        .design-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: #f8fafc;
+        }
+
+        .design-toolbar {
+            padding: 12px 20px;
+            background: white;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .toolbar-group {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .toolbar-label {
+            font-size: 0.85rem;
+            color: var(--dark);
+            font-weight: 500;
+        }
+
+        .toolbar-select {
+            padding: 6px 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.8rem;
+            background: white;
+        }
+
+        .design-area-wrapper {
+            flex: 1;
+            padding: 20px;
+            overflow: auto;
+            position: relative;
+        }
+
+        .design-area {
+            background: white;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            min-height: 500px;
+            position: relative;
+            overflow: hidden;
+            margin: 0 auto;
+            width: 1200px;
+            border: 2px dashed #e0e0e0;
+        }
+
+        .design-area.drag-over {
+            border-color: var(--primary);
+            background: rgba(92, 107, 192, 0.05);
+        }
+
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px);
+            background-size: 20px 20px;
+            pointer-events: none;
+            opacity: 0.5;
+        }
+
+        .placeholder {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: var(--gray);
+            padding: 30px;
+            max-width: 400px;
+        }
+
+        .placeholder i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.3;
+        }
+
+        .placeholder h3 {
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        /* Dropped Components */
+        .dropped-component {
+            position: absolute;
+            border: 2px solid transparent;
+            border-radius: 6px;
+            transition: var(--transition);
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            cursor: move;
+            min-width: 100px;
+            min-height: 50px;
+            resize: both;
+            overflow: hidden;
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        .dropped-component:hover {
+            border-color: var(--primary-light);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .dropped-component.selected {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(92, 107, 192, 0.2);
+            z-index: 100;
+        }
+
+        .component-header {
+            background: var(--primary);
+            color: white;
+            padding: 6px 10px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 4px 4px 0 0;
+            cursor: move;
+        }
+
+        .component-controls {
+            display: flex;
+            gap: 4px;
+        }
+
+        .component-btn {
+            width: 22px;
+            height: 22px;
+            border-radius: 4px;
+            border: none;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            transition: var(--transition);
+        }
+
+        .component-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .component-content {
+            padding: 15px;
+            min-height: 40px;
+        }
+
+        .resize-handle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+            bottom: -4px;
+            right: -4px;
+            cursor: nwse-resize;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .dropped-component:hover .resize-handle {
+            opacity: 1;
+        }
+
+        /* Sidebar Right */
+        .sidebar-right {
+            width: 350px;
+            background: white;
+            border-left: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .sidebar-tabs {
+            display: flex;
+            background: var(--light);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            background: none;
+            border: none;
+            color: var(--gray);
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.85rem;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .tab-btn:hover {
+            background: rgba(0,0,0,0.02);
+            color: var(--dark);
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: var(--primary);
+            border-bottom: 3px solid var(--primary);
+        }
+
+        .tab-content {
+            flex: 1;
+            overflow: hidden;
+            display: none;
+        }
+
+        .tab-content.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Properties Panel */
+        .properties-panel {
+            padding: 15px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .properties-group {
+            margin-bottom: 20px;
+            background: var(--light);
+            border-radius: 6px;
+            padding: 12px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .group-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .property {
+            margin-bottom: 12px;
+        }
+
+        .property label {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .property-input {
+            width: 100%;
+            padding: 6px 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.85rem;
+        }
+
+        .property-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .property-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* Code Editor */
+        .code-panel {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .code-header {
+            padding: 12px 15px;
+            background: var(--code-bg);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #333;
+        }
+
+        .code-editor {
+            width: 100%;
+            height: 100%;
+            background: var(--code-bg);
+            color: #d4d4d4;
+            font-family: monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            padding: 15px;
+            border: none;
+            resize: none;
+            outline: none;
+            tab-size: 2;
+        }
+
+        /* Layers Panel */
+        .layers-panel {
+            padding: 15px;
+            overflow-y: auto;
+        }
+
+        .layers-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .layer-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .layer-item:hover {
+            background: var(--light);
+            border-color: var(--primary-light);
+        }
+
+        .layer-item.selected {
+            background: rgba(92, 107, 192, 0.1);
+            border-color: var(--primary);
+        }
+
+        .layer-icon {
+            width: 22px;
+            height: 22px;
+            border-radius: 4px;
+            background: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.7rem;
+        }
+
+        .layer-info {
+            flex: 1;
+        }
+
+        .layer-name {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .layer-type {
+            font-size: 0.7rem;
+            color: var(--gray);
+        }
+
+        /* Modals */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            background: var(--dark);
+            color: white;
+            padding: 15px 20px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-body {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .modal-footer {
+            padding: 15px 20px;
+            background: var(--light);
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            border-top: 1px solid var(--border);
+        }
+
+        /* Export Options */
+        .export-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .export-card {
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            padding: 20px 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .export-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+
+        .export-card i {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .export-card h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+
+        /* Toast */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            background: white;
+            border-radius: 6px;
+            padding: 12px 15px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideIn 0.3s ease;
+            border-left: 4px solid var(--primary);
+        }
+
+        .toast.success {
+            border-left-color: var(--success);
+        }
+
+        .toast.error {
+            border-left-color: var(--danger);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .sidebar-left, .sidebar-right {
+                width: 250px;
+            }
+            .design-area {
+                width: 900px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-cube"></i>
+                <span>GripesJS Studio</span>
+            </div>
+            <div class="controls">
+                <button class="btn btn-light" id="saveBtn">
+                    <i class="fas fa-save"></i> Guardar
+                </button>
+                <button class="btn btn-light" id="loadBtn">
+                    <i class="fas fa-folder-open"></i> Cargar
+                </button>
+                <button class="btn btn-danger" id="clearBtn">
+                    <i class="fas fa-trash-alt"></i> Limpiar
+                </button>
+                <button class="btn btn-success" id="exportBtn">
+                    <i class="fas fa-file-export"></i> Exportar
+                </button>
+                <button class="btn btn-primary" id="previewBtn">
+                    <i class="fas fa-eye"></i> Vista Previa
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Layout -->
+        <div class="main-layout">
+            <!-- Left Sidebar - Components -->
+            <div class="sidebar-left">
+                <div class="components-search">
+                    <input type="text" class="search-box" id="searchBox" placeholder="Buscar componentes...">
+                </div>
+                <div class="components-categories" id="componentsContainer">
+                    <!-- Categorías se cargan dinámicamente -->
+                </div>
+            </div>
+
+            <!-- Main Design Area -->
+            <div class="design-container">
+                <div class="design-toolbar">
+                    <div class="toolbar-group">
+                        <label class="toolbar-label">Guías:</label>
+                        <select class="toolbar-select" id="gridSelect">
+                            <option value="10">10px</option>
+                            <option value="20" selected>20px</option>
+                            <option value="50">50px</option>
+                            <option value="0">Off</option>
+                        </select>
+                    </div>
+                    <div class="toolbar-group">
+                        <button class="btn btn-light" id="undoBtn">
+                            <i class="fas fa-undo"></i>
+                        </button>
+                        <button class="btn btn-light" id="redoBtn">
+                            <i class="fas fa-redo"></i>
+                        </button>
+                        <button class="btn btn-light" id="snapToggle">
+                            <i class="fas fa-magnet"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="design-area-wrapper">
+                    <div class="design-area" id="designArea">
+                        <div class="grid-overlay" id="gridOverlay"></div>
+                        <div class="placeholder" id="placeholder">
+                            <i class="fas fa-shapes"></i>
+                            <h3>Área de Diseño</h3>
+                            <p>Arrastra componentes desde el panel izquierdo</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Sidebar - Properties & Code -->
+            <div class="sidebar-right">
+                <div class="sidebar-tabs">
+                    <button class="tab-btn active" data-tab="properties">
+                        <i class="fas fa-sliders-h"></i> Propiedades
+                    </button>
+                    <button class="tab-btn" data-tab="layers">
+                        <i class="fas fa-layer-group"></i> Capas
+                    </button>
+                    <button class="tab-btn" data-tab="code">
+                        <i class="fas fa-code"></i> Código
+                    </button>
+                </div>
+
+                <!-- Properties Tab -->
+                <div class="tab-content active" id="propertiesTab">
+                    <div class="properties-panel" id="propertiesPanel">
+                        <div class="placeholder" style="position: relative; transform: none; padding: 40px 20px;">
+                            <i class="fas fa-mouse-pointer"></i>
+                            <h3>Selecciona un componente</h3>
+                            <p>Haz clic en cualquier componente para editar sus propiedades</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Layers Tab -->
+                <div class="tab-content" id="layersTab">
+                    <div class="layers-panel">
+                        <div class="layers-list" id="layersList">
+                            <!-- Las capas se cargan dinámicamente -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Code Tab -->
+                <div class="tab-content" id="codeTab">
+                    <div class="code-panel">
+                        <div class="code-header">
+                            <span>Editor de Código</span>
+                            <div>
+                                <button class="btn btn-primary" id="copyCodeBtn" style="padding: 4px 8px; font-size: 0.75rem;">
+                                    <i class="fas fa-copy"></i> Copiar
+                                </button>
+                            </div>
+                        </div>
+                        <textarea class="code-editor" id="codeEditor" spellcheck="false"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Modal -->
+    <div class="modal" id="exportModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>Exportar Diseño</span>
+                <button class="modal-close" id="closeExportModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <h3 style="margin-bottom: 15px; color: var(--dark);">Selecciona el formato:</h3>
+                <div class="export-grid" id="exportGrid">
+                    <!-- Las opciones de exportación se cargan dinámicamente -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-light" id="cancelExportBtn">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // ================================
+        // GRIPESJS CORE - Versión Simplificada y Funcional
+        // ================================
+        class GripesJS {
+            constructor() {
+                this.components = [];
+                this.selectedComponent = null;
+                this.history = [];
+                this.historyIndex = -1;
+                this.nextId = 1;
+                this.snapGrid = 20;
+                this.snapEnabled = true;
+                
+                this.init();
+            }
+
+            init() {
+                this.setupEventListeners();
+                this.renderComponentPanel();
+                this.setupExportOptions();
+                this.updateGrid();
+                this.saveHistory();
+                
+                // Crear algunos componentes de ejemplo
+                this.createComponent('header', {
+                    position: { x: 100, y: 50 },
+                    config: {
+                        text: 'Bienvenido a GripesJS',
+                        level: 'h1',
+                        color: '#333333',
+                        align: 'center',
+                        size: '2.5rem'
+                    }
+                });
+                
+                this.createComponent('text', {
+                    position: { x: 100, y: 120 },
+                    config: {
+                        text: 'Arrastra componentes para crear tu diseño. Edita propiedades y exporta tu código.',
+                        color: '#666666',
+                        align: 'center',
+                        size: '1.1rem'
+                    }
+                });
+                
+                this.createComponent('button', {
+                    position: { x: 450, y: 200 },
+                    config: {
+                        text: 'Comenzar Ahora',
+                        backgroundColor: '#5c6bc0',
+                        size: 'medium'
+                    }
+                });
+            }
+
+            // Componentes disponibles
+            getAvailableComponents() {
+                return {
+                    'header': {
+                        name: 'Encabezado',
+                        category: 'Básicos',
+                        icon: 'fas fa-heading',
+                        defaultConfig: {
+                            text: 'Nuevo Encabezado',
+                            level: 'h1',
+                            color: '#333333',
+                            align: 'left',
+                            size: '2rem'
+                        }
+                    },
+                    'text': {
+                        name: 'Texto',
+                        category: 'Básicos',
+                        icon: 'fas fa-paragraph',
+                        defaultConfig: {
+                            text: 'Texto de ejemplo',
+                            color: '#666666',
+                            align: 'left',
+                            size: '1rem',
+                            lineHeight: '1.5'
+                        }
+                    },
+                    'button': {
+                        name: 'Botón',
+                        category: 'Básicos',
+                        icon: 'fas fa-square',
+                        defaultConfig: {
+                            text: 'Botón',
+                            backgroundColor: '#5c6bc0',
+                            color: '#ffffff',
+                            size: 'medium',
+                            borderRadius: '6px',
+                            padding: '10px 20px'
+                        }
+                    },
+                    'image': {
+                        name: 'Imagen',
+                        category: 'Básicos',
+                        icon: 'fas fa-image',
+                        defaultConfig: {
+                            src: 'https://via.placeholder.com/300x200',
+                            alt: 'Imagen',
+                            width: '300px',
+                            height: 'auto',
+                            borderRadius: '8px'
+                        }
+                    },
+                    'divider': {
+                        name: 'Divisor',
+                        category: 'Básicos',
+                        icon: 'fas fa-minus',
+                        defaultConfig: {
+                            color: '#e0e0e0',
+                            thickness: '1px',
+                            margin: '20px 0'
+                        }
+                    },
+                    'container': {
+                        name: 'Contenedor',
+                        category: 'Layout',
+                        icon: 'fas fa-square-full',
+                        defaultConfig: {
+                            padding: '20px',
+                            backgroundColor: '#f5f5f5',
+                            borderRadius: '8px',
+                            border: '1px solid #e0e0e0'
+                        }
+                    },
+                    'card': {
+                        name: 'Tarjeta',
+                        category: 'Layout',
+                        icon: 'fas fa-id-card',
+                        defaultConfig: {
+                            title: 'Título de Tarjeta',
+                            content: 'Contenido de la tarjeta',
+                            backgroundColor: '#ffffff',
+                            padding: '20px',
+                            borderRadius: '12px',
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                        }
+                    },
+                    'input': {
+                        name: 'Campo de Texto',
+                        category: 'Formularios',
+                        icon: 'fas fa-font',
+                        defaultConfig: {
+                            placeholder: 'Escribe aquí...',
+                            width: '100%',
+                            padding: '10px',
+                            borderRadius: '6px',
+                            borderColor: '#ddd'
+                        }
+                    },
+                    'textarea': {
+                        name: 'Área de Texto',
+                        category: 'Formularios',
+                        icon: 'fas fa-align-left',
+                        defaultConfig: {
+                            placeholder: 'Escribe tu mensaje...',
+                            rows: 4,
+                            width: '100%',
+                            padding: '10px',
+                            borderRadius: '6px',
+                            borderColor: '#ddd'
+                        }
+                    },
+                    'navbar': {
+                        name: 'Barra de Navegación',
+                        category: 'Navegación',
+                        icon: 'fas fa-bars',
+                        defaultConfig: {
+                            logo: 'MiLogo',
+                            menuItems: ['Inicio', 'Servicios', 'Contacto'],
+                            backgroundColor: '#2c3e50',
+                            textColor: '#ffffff'
+                        }
+                    }
+                };
+            }
+
+            setupEventListeners() {
+                const designArea = document.getElementById('designArea');
+                
+                // Drag & Drop
+                designArea.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    designArea.classList.add('drag-over');
+                });
+
+                designArea.addEventListener('dragleave', () => {
+                    designArea.classList.remove('drag-over');
+                });
+
+                designArea.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    designArea.classList.remove('drag-over');
+                    
+                    const type = e.dataTransfer.getData('component-type');
+                    if (type) {
+                        const rect = designArea.getBoundingClientRect();
+                        const x = e.clientX - rect.left - 50;
+                        const y = e.clientY - rect.top - 50;
+                        
+                        this.createComponent(type, {
+                            position: { x: this.snapToGrid(x), y: this.snapToGrid(y) }
+                        });
+                    }
+                });
+
+                // Click fuera para deseleccionar
+                designArea.addEventListener('click', (e) => {
+                    if (e.target === designArea || e.target.classList.contains('grid-overlay')) {
+                        this.selectComponent(null);
+                    }
+                });
+            }
+
+            snapToGrid(value) {
+                if (!this.snapEnabled) return Math.max(0, value);
+                return Math.round(Math.max(0, value) / this.snapGrid) * this.snapGrid;
+            }
+
+            createComponent(type, config = {}) {
+                const componentDef = this.getAvailableComponents()[type];
+                if (!componentDef) return null;
+
+                const component = {
+                    id: `comp_${this.nextId++}`,
+                    type: type,
+                    name: componentDef.name,
+                    config: { ...componentDef.defaultConfig, ...config.config },
+                    position: {
+                        x: config.position?.x || 50,
+                        y: config.position?.y || 50
+                    },
+                    size: config.size || { width: 'auto', height: 'auto' },
+                    zIndex: this.components.length + 1
+                };
+
+                this.components.push(component);
+                this.selectComponent(component.id);
+                this.saveHistory();
+                this.renderDesignArea();
+                this.updateLayersPanel();
+                
+                this.showToast(`Componente "${componentDef.name}" añadido`, 'success');
+                return component;
+            }
+
+            renderDesignArea() {
+                const designArea = document.getElementById('designArea');
+                const placeholder = document.getElementById('placeholder');
+                
+                // Limpiar componentes existentes
+                const existing = designArea.querySelectorAll('.dropped-component');
+                existing.forEach(el => el.remove());
+                
+                // Mostrar/ocultar placeholder
+                if (this.components.length === 0) {
+                    placeholder.style.display = 'block';
+                } else {
+                    placeholder.style.display = 'none';
+                    
+                    // Renderizar cada componente
+                    this.components.forEach(comp => {
+                        const element = this.createComponentElement(comp);
+                        designArea.appendChild(element);
+                    });
+                }
+                
+                this.updateCodeEditor();
+            }
+
+            createComponentElement(component) {
+                const element = document.createElement('div');
+                element.className = `dropped-component`;
+                element.id = component.id;
+                element.style.left = `${component.position.x}px`;
+                element.style.top = `${component.position.y}px`;
+                element.style.zIndex = component.zIndex;
+                
+                if (component.size.width !== 'auto') {
+                    element.style.width = component.size.width;
+                }
+                if (component.size.height !== 'auto') {
+                    element.style.height = component.size.height;
+                }
+                
+                if (this.selectedComponent === component.id) {
+                    element.classList.add('selected');
+                }
+                
+                // Contenido del componente
+                const content = this.generateComponentHTML(component);
+                element.innerHTML = `
+                    <div class="component-header">
+                        <span>${component.name}</span>
+                        <div class="component-controls">
+                            <button class="component-btn" onclick="gripes.deleteComponent('${component.id}')" title="Eliminar">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="component-content">
+                        ${content}
+                    </div>
+                    <div class="resize-handle"></div>
+                `;
+                
+                // Hacer arrastrable
+                this.makeDraggable(element, component);
+                this.makeResizable(element, component);
+                
+                // Click para seleccionar
+                element.addEventListener('click', (e) => {
+                    if (!e.target.closest('.component-controls')) {
+                        this.selectComponent(component.id);
+                        e.stopPropagation();
+                    }
+                });
+                
+                return element;
+            }
+
+            generateComponentHTML(component) {
+                const config = component.config;
+                
+                switch(component.type) {
+                    case 'header':
+                        return `<${config.level} style="color: ${config.color}; text-align: ${config.align}; font-size: ${config.size}; margin: 0;">${config.text}</${config.level}>`;
+                    
+                    case 'text':
+                        return `<p style="color: ${config.color}; text-align: ${config.align}; font-size: ${config.size}; line-height: ${config.lineHeight}; margin: 0;">${config.text}</p>`;
+                    
+                    case 'button':
+                        return `<button style="background: ${config.backgroundColor}; color: ${config.color}; padding: ${config.padding}; border: none; border-radius: ${config.borderRadius}; font-size: ${config.size === 'small' ? '0.875rem' : config.size === 'large' ? '1.25rem' : '1rem'}; cursor: pointer;">${config.text}</button>`;
+                    
+                    case 'image':
+                        return `<img src="${config.src}" alt="${config.alt}" style="width: ${config.width}; height: ${config.height}; border-radius: ${config.borderRadius}; display: block; max-width: 100%;">`;
+                    
+                    case 'divider':
+                        return `<hr style="border: ${config.thickness} solid ${config.color}; margin: ${config.margin};">`;
+                    
+                    case 'container':
+                        return `<div style="padding: ${config.padding}; background: ${config.backgroundColor}; border-radius: ${config.borderRadius}; border: ${config.border}; min-height: 100px;">Contenido</div>`;
+                    
+                    case 'card':
+                        return `
+                            <div style="padding: ${config.padding}; background: ${config.backgroundColor}; border-radius: ${config.borderRadius}; box-shadow: ${config.boxShadow};">
+                                <h3 style="margin: 0 0 10px 0; color: #333;">${config.title}</h3>
+                                <p style="color: #666; margin: 0;">${config.content}</p>
+                            </div>
+                        `;
+                    
+                    case 'input':
+                        return `<input type="text" placeholder="${config.placeholder}" style="width: ${config.width}; padding: ${config.padding}; border: 1px solid ${config.borderColor}; border-radius: ${config.borderRadius};">`;
+                    
+                    case 'textarea':
+                        return `<textarea rows="${config.rows}" placeholder="${config.placeholder}" style="width: ${config.width}; padding: ${config.padding}; border: 1px solid ${config.borderColor}; border-radius: ${config.borderRadius};">${config.text || ''}</textarea>`;
+                    
+                    case 'navbar':
+                        const menuItems = config.menuItems.map(item => `<a href="#" style="color: ${config.textColor}; text-decoration: none; margin: 0 15px;">${item}</a>`).join('');
+                        return `
+                            <div style="background: ${config.backgroundColor}; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;">
+                                <div style="color: ${config.textColor}; font-weight: bold; font-size: 1.2rem;">${config.logo}</div>
+                                <div>${menuItems}</div>
+                            </div>
+                        `;
+                    
+                    default:
+                        return `<div>${component.name}</div>`;
+                }
+            }
+
+            makeDraggable(element, component) {
+                let isDragging = false;
+                let startX, startY, startLeft, startTop;
+                
+                const header = element.querySelector('.component-header');
+                
+                const startDrag = (e) => {
+                    isDragging = true;
+                    startX = e.clientX;
+                    startY = e.clientY;
+                    startLeft = element.offsetLeft;
+                    startTop = element.offsetTop;
+                    
+                    element.style.cursor = 'grabbing';
+                    e.preventDefault();
+                };
+                
+                const doDrag = (e) => {
+                    if (!isDragging) return;
+                    
+                    const dx = e.clientX - startX;
+                    const dy = e.clientY - startY;
+                    
+                    let newLeft = startLeft + dx;
+                    let newTop = startTop + dy;
+                    
+                    if (this.snapEnabled) {
+                        newLeft = this.snapToGrid(newLeft);
+                        newTop = this.snapToGrid(newTop);
+                    }
+                    
+                    element.style.left = `${newLeft}px`;
+                    element.style.top = `${newTop}px`;
+                };
+                
+                const stopDrag = () => {
+                    if (!isDragging) return;
+                    
+                    isDragging = false;
+                    element.style.cursor = '';
+                    
+                    const comp = this.components.find(c => c.id === component.id);
+                    if (comp) {
+                        comp.position.x = parseInt(element.style.left);
+                        comp.position.y = parseInt(element.style.top);
+                        this.saveHistory();
+                    }
+                };
+                
+                header.addEventListener('mousedown', startDrag);
+                document.addEventListener('mousemove', doDrag);
+                document.addEventListener('mouseup', stopDrag);
+            }
+
+            makeResizable(element, component) {
+                const handle = element.querySelector('.resize-handle');
+                let isResizing = false;
+                let startX, startY, startWidth, startHeight;
+                
+                const startResize = (e) => {
+                    isResizing = true;
+                    startX = e.clientX;
+                    startY = e.clientY;
+                    startWidth = element.offsetWidth;
+                    startHeight = element.offsetHeight;
+                    
+                    e.stopPropagation();
+                    e.preventDefault();
+                };
+                
+                const doResize = (e) => {
+                    if (!isResizing) return;
+                    
+                    const dx = e.clientX - startX;
+                    const dy = e.clientY - startY;
+                    
+                    let newWidth = startWidth + dx;
+                    let newHeight = startHeight + dy;
+                    
+                    if (this.snapEnabled) {
+                        newWidth = this.snapToGrid(newWidth);
+                        newHeight = this.snapToGrid(newHeight);
+                    }
+                    
+                    newWidth = Math.max(newWidth, 50);
+                    newHeight = Math.max(newHeight, 30);
+                    
+                    element.style.width = `${newWidth}px`;
+                    element.style.height = `${newHeight}px`;
+                };
+                
+                const stopResize = () => {
+                    if (!isResizing) return;
+                    
+                    isResizing = false;
+                    
+                    const comp = this.components.find(c => c.id === component.id);
+                    if (comp) {
+                        comp.size.width = `${element.offsetWidth}px`;
+                        comp.size.height = `${element.offsetHeight}px`;
+                        this.saveHistory();
+                    }
+                };
+                
+                handle.addEventListener('mousedown', startResize);
+                document.addEventListener('mousemove', doResize);
+                document.addEventListener('mouseup', stopResize);
+            }
+
+            selectComponent(id) {
+                this.selectedComponent = id;
+                this.renderDesignArea();
+                this.updatePropertiesPanel();
+                this.updateLayersPanel();
+            }
+
+            deleteComponent(id) {
+                const index = this.components.findIndex(c => c.id === id);
+                if (index !== -1) {
+                    this.components.splice(index, 1);
+                    this.selectComponent(null);
+                    this.saveHistory();
+                    this.renderDesignArea();
+                    this.updateLayersPanel();
+                    this.showToast('Componente eliminado', 'success');
+                }
+            }
+
+            saveHistory() {
+                this.history = this.history.slice(0, this.historyIndex + 1);
+                this.history.push(JSON.parse(JSON.stringify(this.components)));
+                this.historyIndex++;
+                
+                if (this.history.length > 20) {
+                    this.history.shift();
+                    this.historyIndex--;
+                }
+            }
+
+            undo() {
+                if (this.historyIndex > 0) {
+                    this.historyIndex--;
+                    this.components = JSON.parse(JSON.stringify(this.history[this.historyIndex]));
+                    this.renderDesignArea();
+                    this.updateLayersPanel();
+                    this.showToast('Deshacer', 'success');
+                }
+            }
+
+            redo() {
+                if (this.historyIndex < this.history.length - 1) {
+                    this.historyIndex++;
+                    this.components = JSON.parse(JSON.stringify(this.history[this.historyIndex]));
+                    this.renderDesignArea();
+                    this.updateLayersPanel();
+                    this.showToast('Rehacer', 'success');
+                }
+            }
+
+            renderComponentPanel() {
+                const container = document.getElementById('componentsContainer');
+                const components = this.getAvailableComponents();
+                const categories = {};
+                
+                // Organizar por categoría
+                Object.entries(components).forEach(([key, comp]) => {
+                    if (!categories[comp.category]) {
+                        categories[comp.category] = [];
+                    }
+                    categories[comp.category].push({ key, ...comp });
+                });
+                
+                // Renderizar
+                container.innerHTML = '';
+                Object.entries(categories).forEach(([categoryName, comps]) => {
+                    const categoryHtml = `
+                        <div class="category">
+                            <div class="category-title">
+                                <i class="fas fa-folder"></i>
+                                ${categoryName}
+                            </div>
+                            <div class="components-grid">
+                                ${comps.map(comp => `
+                                    <div class="component-item" 
+                                         draggable="true" 
+                                         data-type="${comp.key}">
+                                        <i class="${comp.icon}"></i>
+                                        <span>${comp.name}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                    container.innerHTML += categoryHtml;
+                });
+                
+                // Eventos drag & drop
+                document.querySelectorAll('.component-item').forEach(item => {
+                    item.addEventListener('dragstart', (e) => {
+                        e.dataTransfer.setData('component-type', e.target.dataset.type);
+                    });
+                });
+                
+                // Búsqueda
+                document.getElementById('searchBox').addEventListener('input', (e) => {
+                    const term = e.target.value.toLowerCase();
+                    document.querySelectorAll('.component-item').forEach(item => {
+                        const text = item.textContent.toLowerCase();
+                        item.style.display = text.includes(term) ? 'flex' : 'none';
+                    });
+                });
+            }
+
+            updatePropertiesPanel() {
+                const panel = document.getElementById('propertiesPanel');
+                
+                if (!this.selectedComponent) {
+                    panel.innerHTML = `
+                        <div class="placeholder" style="position: relative; transform: none; padding: 40px 20px;">
+                            <i class="fas fa-mouse-pointer"></i>
+                            <h3>Selecciona un componente</h3>
+                            <p>Haz clic en cualquier componente para editar sus propiedades</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                const component = this.components.find(c => c.id === this.selectedComponent);
+                if (!component) return;
+                
+                const config = component.config;
+                let propertiesHtml = '';
+                
+                // Propiedades generales
+                propertiesHtml += `
+                    <div class="properties-group">
+                        <div class="group-title">
+                            <i class="fas fa-cog"></i>
+                            Propiedades Generales
+                        </div>
+                        <div class="property">
+                            <label>Nombre</label>
+                            <input type="text" class="property-input" value="${component.name}" 
+                                   onchange="gripes.updateComponentName('${component.id}', this.value)">
+                        </div>
+                        <div class="property-row">
+                            <div class="property" style="flex: 1;">
+                                <label>Posición X</label>
+                                <input type="number" class="property-input" value="${component.position.x}" 
+                                       onchange="gripes.updateComponentPosition('${component.id}', 'x', this.value)">
+                            </div>
+                            <div class="property" style="flex: 1;">
+                                <label>Posición Y</label>
+                                <input type="number" class="property-input" value="${component.position.y}" 
+                                       onchange="gripes.updateComponentPosition('${component.id}', 'y', this.value)">
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Propiedades específicas
+                if (component.type === 'header') {
+                    propertiesHtml += `
+                        <div class="properties-group">
+                            <div class="group-title">
+                                <i class="fas fa-heading"></i>
+                                Propiedades de Encabezado
+                            </div>
+                            <div class="property">
+                                <label>Texto</label>
+                                <input type="text" class="property-input" value="${config.text}" 
+                                       onchange="gripes.updateComponentConfig('${component.id}', 'text', this.value)">
+                            </div>
+                            <div class="property">
+                                <label>Nivel</label>
+                                <select class="property-input" 
+                                        onchange="gripes.updateComponentConfig('${component.id}', 'level', this.value)">
+                                    <option value="h1" ${config.level === 'h1' ? 'selected' : ''}>H1</option>
+                                    <option value="h2" ${config.level === 'h2' ? 'selected' : ''}>H2</option>
+                                    <option value="h3" ${config.level === 'h3' ? 'selected' : ''}>H3</option>
+                                    <option value="h4" ${config.level === 'h4' ? 'selected' : ''}>H4</option>
+                                    <option value="h5" ${config.level === 'h5' ? 'selected' : ''}>H5</option>
+                                </select>
+                            </div>
+                            <div class="property">
+                                <label>Tamaño</label>
+                                <input type="text" class="property-input" value="${config.size}" 
+                                       onchange="gripes.updateComponentConfig('${component.id}', 'size', this.value)">
+                            </div>
+                            <div class="property">
+                                <label>Color</label>
+                                <input type="color" class="property-input" value="${config.color}" 
+                                       onchange="gripes.updateComponentConfig('${component.id}', 'color', this.value)" 
+                                       style="height: 40px;">
+                            </div>
+                        </div>
+                    `;
+                } else if (component.type === 'button') {
+                    propertiesHtml += `
+                        <div class="properties-group">
+                            <div class="group-title">
+                                <i class="fas fa-square"></i>
+                                Propiedades de Botón
+                            </div>
+                            <div class="property">
+                                <label>Texto</label>
+                                <input type="text" class="property-input" value="${config.text}" 
+                                       onchange="gripes.updateComponentConfig('${component.id}', 'text', this.value)">
+                            </div>
+                            <div class="property">
+                                <label>Color de Fondo</label>
+                                <input type="color" class="property-input" value="${config.backgroundColor}" 
+                                       onchange="gripes.updateComponentConfig('${component.id}', 'backgroundColor', this.value)" 
+                                       style="height: 40px;">
+                            </div>
+                            <div class="property">
+                                <label>Tamaño</label>
+                                <select class="property-input" 
+                                        onchange="gripes.updateComponentConfig('${component.id}', 'size', this.value)">
+                                    <option value="small" ${config.size === 'small' ? 'selected' : ''}>Pequeño</option>
+                                    <option value="medium" ${config.size === 'medium' ? 'selected' : ''}>Mediano</option>
+                                    <option value="large" ${config.size === 'large' ? 'selected' : ''}>Grande</option>
+                                </select>
+                            </div>
+                        </div>
+                    `;
+                } else if (component.type === 'text') {
+                    propertiesHtml += `
+                        <div class="properties-group">
+                            <div class="group-title">
+                                <i class="fas fa-paragraph"></i>
+                                Propiedades de Texto
+                            </div>
+                            <div class="property">
+                                <label>Texto</label>
+                                <textarea class="property-input" 
+                                          onchange="gripes.updateComponentConfig('${component.id}', 'text', this.value)" 
+                                          style="height: 80px;">${config.text}</textarea>
+                            </div>
+                            <div class="property">
+                                <label>Tamaño</label>
+                                <input type="text" class="property-input" value="${config.size}" 
+                                       onchange="gripes.updateComponentConfig('${component.id}', 'size', this.value)">
+                            </div>
+                            <div class="property">
+                                <label>Color</label>
+                                <input type="color" class="property-input" value="${config.color}" 
+                                       onchange="gripes.updateComponentConfig('${component.id}', 'color', this.value)" 
+                                       style="height: 40px;">
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                panel.innerHTML = propertiesHtml;
+            }
+
+            updateComponentName(id, name) {
+                const component = this.components.find(c => c.id === id);
+                if (component) {
+                    component.name = name;
+                    this.saveHistory();
+                    this.updateLayersPanel();
+                    this.renderDesignArea();
+                }
+            }
+
+            updateComponentPosition(id, axis, value) {
+                const component = this.components.find(c => c.id === id);
+                if (component) {
+                    component.position[axis] = parseInt(value) || 0;
+                    this.saveHistory();
+                    this.renderDesignArea();
+                }
+            }
+
+            updateComponentConfig(id, key, value) {
+                const component = this.components.find(c => c.id === id);
+                if (component) {
+                    component.config[key] = value;
+                    this.saveHistory();
+                    this.renderDesignArea();
+                }
+            }
+
+            updateLayersPanel() {
+                const list = document.getElementById('layersList');
+                const sortedComponents = [...this.components].sort((a, b) => b.zIndex - a.zIndex);
+                
+                list.innerHTML = sortedComponents.map(comp => `
+                    <div class="layer-item ${this.selectedComponent === comp.id ? 'selected' : ''}" 
+                         onclick="gripes.selectComponent('${comp.id}')">
+                        <div class="layer-icon">
+                            <i class="${this.getAvailableComponents()[comp.type]?.icon || 'fas fa-cube'}"></i>
+                        </div>
+                        <div class="layer-info">
+                            <div class="layer-name">${comp.name}</div>
+                            <div class="layer-type">${this.getAvailableComponents()[comp.type]?.name || comp.type}</div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            updateCodeEditor() {
+                const editor = document.getElementById('codeEditor');
+                editor.value = this.generateFullHTML();
+            }
+
+            generateFullHTML() {
+                let html = `<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diseño GripesJS</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: sans-serif;
+        }
+        body {
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .gripesjs-container {
+            position: relative;
+            width: 1200px;
+            min-height: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="gripesjs-container">
+`;
+                
+                this.components.forEach(comp => {
+                    const styles = `
+            position: absolute;
+            left: ${comp.position.x}px;
+            top: ${comp.position.y}px;
+            z-index: ${comp.zIndex};
+            ${comp.size.width !== 'auto' ? `width: ${comp.size.width};` : ''}
+            ${comp.size.height !== 'auto' ? `height: ${comp.size.height};` : ''}
+        `.trim();
+                    
+                    html += `        <div style="${styles}">
+            ${this.generateComponentHTML(comp)}
+        </div>\n`;
+                });
+                
+                html += `    </div>
+</body>
+</html>`;
+                
+                return html;
+            }
+
+            setupExportOptions() {
+                const exportGrid = document.getElementById('exportGrid');
+                exportGrid.innerHTML = `
+                    <div class="export-card" data-export="html">
+                        <i class="fab fa-html5"></i>
+                        <h4>HTML Completo</h4>
+                        <p>Exporta como archivo HTML con estilos incluidos</p>
+                    </div>
+                    <div class="export-card" data-export="json">
+                        <i class="fas fa-database"></i>
+                        <h4>JSON</h4>
+                        <p>Estructura completa del proyecto</p>
+                    </div>
+                    <div class="export-card" data-export="code">
+                        <i class="fas fa-code"></i>
+                        <h4>Solo Código</h4>
+                        <p>Copia el código HTML generado</p>
+                    </div>
+                    <div class="export-card" data-export="preview">
+                        <i class="fas fa-eye"></i>
+                        <h4>Vista Previa</h4>
+                        <p>Ver en una nueva pestaña</p>
+                    </div>
+                `;
+                
+                document.querySelectorAll('.export-card').forEach(card => {
+                    card.addEventListener('click', (e) => {
+                        const type = e.currentTarget.dataset.export;
+                        this.exportProject(type);
+                    });
+                });
+            }
+
+            exportProject(type) {
+                switch(type) {
+                    case 'html':
+                        const html = this.generateFullHTML();
+                        this.downloadFile(html, 'gripesjs-design.html', 'text/html');
+                        this.showToast('Proyecto exportado como HTML', 'success');
+                        break;
+                    case 'json':
+                        const projectData = {
+                            components: this.components,
+                            timestamp: new Date().toISOString()
+                        };
+                        const json = JSON.stringify(projectData, null, 2);
+                        this.downloadFile(json, 'gripesjs-design.json', 'application/json');
+                        this.showToast('Proyecto exportado como JSON', 'success');
+                        break;
+                    case 'code':
+                        const code = this.generateFullHTML();
+                        navigator.clipboard.writeText(code).then(() => {
+                            this.showToast('Código copiado al portapapeles', 'success');
+                        });
+                        break;
+                    case 'preview':
+                        const preview = window.open();
+                        preview.document.write(this.generateFullHTML());
+                        preview.document.close();
+                        break;
+                }
+                
+                document.getElementById('exportModal').classList.remove('active');
+            }
+
+            downloadFile(content, filename, mimeType) {
+                const blob = new Blob([content], { type: mimeType });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+
+            updateGrid() {
+                const gridSize = parseInt(document.getElementById('gridSelect').value);
+                this.snapGrid = gridSize;
+                
+                const gridOverlay = document.getElementById('gridOverlay');
+                if (gridSize > 0) {
+                    gridOverlay.style.backgroundSize = `${gridSize}px ${gridSize}px`;
+                    gridOverlay.style.display = 'block';
+                } else {
+                    gridOverlay.style.display = 'none';
+                }
+            }
+
+            toggleSnap() {
+                this.snapEnabled = !this.snapEnabled;
+                const button = document.getElementById('snapToggle');
+                button.classList.toggle('btn-primary', this.snapEnabled);
+                button.classList.toggle('btn-light', !this.snapEnabled);
+                this.showToast(`Snapping ${this.snapEnabled ? 'activado' : 'desactivado'}`, 'success');
+            }
+
+            clearAll() {
+                if (this.components.length === 0) return;
+                
+                if (confirm('¿Eliminar todos los componentes?')) {
+                    this.components = [];
+                    this.selectedComponent = null;
+                    this.saveHistory();
+                    this.renderDesignArea();
+                    this.updateLayersPanel();
+                    this.showToast('Todos los componentes eliminados', 'success');
+                }
+            }
+
+            saveProject() {
+                const projectData = {
+                    name: prompt('Nombre del proyecto:', 'Mi diseño GripesJS'),
+                    components: this.components,
+                    timestamp: new Date().toISOString()
+                };
+                
+                localStorage.setItem('gripesjs-project', JSON.stringify(projectData));
+                this.showToast('Proyecto guardado localmente', 'success');
+            }
+
+            loadProject() {
+                const saved = localStorage.getItem('gripesjs-project');
+                if (!saved) {
+                    this.showToast('No hay proyectos guardados', 'error');
+                    return;
+                }
+                
+                try {
+                    const project = JSON.parse(saved);
+                    this.components = project.components || [];
+                    this.selectedComponent = null;
+                    this.saveHistory();
+                    this.renderDesignArea();
+                    this.updateLayersPanel();
+                    this.showToast('Proyecto cargado', 'success');
+                } catch (e) {
+                    this.showToast('Error al cargar el proyecto', 'error');
+                }
+            }
+
+            showToast(message, type = 'success') {
+                const container = document.getElementById('toastContainer');
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.innerHTML = `
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                    <span>${message}</span>
+                `;
+                
+                container.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.remove();
+                }, 3000);
+            }
+        }
+
+        // ================================
+        // INICIALIZACIÓN
+        // ================================
+        const gripes = new GripesJS();
+        window.gripes = gripes;
+
+        // Event Listeners del DOM
+        document.addEventListener('DOMContentLoaded', () => {
+            // Botones principales
+            document.getElementById('saveBtn').addEventListener('click', () => gripes.saveProject());
+            document.getElementById('loadBtn').addEventListener('click', () => gripes.loadProject());
+            document.getElementById('clearBtn').addEventListener('click', () => gripes.clearAll());
+            document.getElementById('exportBtn').addEventListener('click', () => {
+                document.getElementById('exportModal').classList.add('active');
+            });
+            document.getElementById('previewBtn').addEventListener('click', () => {
+                const preview = window.open();
+                preview.document.write(gripes.generateFullHTML());
+                preview.document.close();
+            });
+
+            // Botones de herramientas
+            document.getElementById('undoBtn').addEventListener('click', () => gripes.undo());
+            document.getElementById('redoBtn').addEventListener('click', () => gripes.redo());
+            document.getElementById('snapToggle').addEventListener('click', () => gripes.toggleSnap());
+
+            // Selectores
+            document.getElementById('gridSelect').addEventListener('change', () => gripes.updateGrid());
+
+            // Tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const tab = btn.dataset.tab;
+                    
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    document.getElementById(`${tab}Tab`).classList.add('active');
+                });
+            });
+
+            // Botón copiar código
+            document.getElementById('copyCodeBtn').addEventListener('click', () => {
+                const code = document.getElementById('codeEditor').value;
+                navigator.clipboard.writeText(code).then(() => {
+                    gripes.showToast('Código copiado', 'success');
+                });
+            });
+
+            // Modal de exportación
+            document.getElementById('closeExportModal').addEventListener('click', () => {
+                document.getElementById('exportModal').classList.remove('active');
+            });
+            document.getElementById('cancelExportBtn').addEventListener('click', () => {
+                document.getElementById('exportModal').classList.remove('active');
+            });
+            document.getElementById('exportModal').addEventListener('click', (e) => {
+                if (e.target === document.getElementById('exportModal')) {
+                    document.getElementById('exportModal').classList.remove('active');
+                }
+            });
+
+            // Atajos de teclado
+            document.addEventListener('keydown', (e) => {
+                if (e.ctrlKey && e.key === 'z') {
+                    e.preventDefault();
+                    gripes.undo();
+                }
+                if (e.ctrlKey && e.key === 'y') {
+                    e.preventDefault();
+                    gripes.redo();
+                }
+                if (e.key === 'Delete' && gripes.selectedComponent) {
+                    gripes.deleteComponent(gripes.selectedComponent);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
