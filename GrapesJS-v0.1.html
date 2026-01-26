@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GripesJS Studio - Diseño Drag & Drop</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #7209b7;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --border: #dee2e6;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .app-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            height: 95vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .logo i {
+            font-size: 2.2rem;
+            color: var(--success);
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3db8d8;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #e11570;
+        }
+
+        /* Main Content */
+        .main-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Components Panel */
+        .components-panel {
+            width: 280px;
+            background: var(--light);
+            border-right: 1px solid var(--border);
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .panel-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--dark);
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .components-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .component-item {
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            cursor: grab;
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+
+        .component-item:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .component-item i {
+            font-size: 1.8rem;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .component-item span {
+            font-size: 0.9rem;
+            color: var(--dark);
+            font-weight: 500;
+        }
+
+        /* Design Area */
+        .design-area-container {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            background: #f5f7fb;
+        }
+
+        .design-area-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .design-area {
+            flex: 1;
+            border: 3px dashed #c1c9d6;
+            border-radius: 12px;
+            background: white;
+            padding: 30px;
+            overflow: auto;
+            position: relative;
+            min-height: 400px;
+        }
+
+        .design-area.drag-over {
+            border-color: var(--primary);
+            background: rgba(67, 97, 238, 0.05);
+        }
+
+        .placeholder {
+            text-align: center;
+            color: var(--gray);
+            padding: 60px 20px;
+        }
+
+        .placeholder i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .placeholder h3 {
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .dropped-component {
+            position: relative;
+            margin: 15px;
+            padding: 20px;
+            border: 2px solid transparent;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            background: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .dropped-component:hover {
+            border-color: var(--primary);
+        }
+
+        .dropped-component.selected {
+            border-color: var(--success);
+            background: rgba(76, 201, 240, 0.05);
+        }
+
+        .component-controls {
+            position: absolute;
+            top: -15px;
+            right: -15px;
+            display: flex;
+            gap: 5px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .dropped-component:hover .component-controls {
+            opacity: 1;
+        }
+
+        .control-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: none;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+
+        .control-btn.edit {
+            color: var(--primary);
+        }
+
+        .control-btn.delete {
+            color: var(--danger);
+        }
+
+        /* Code Editor */
+        .code-panel {
+            width: 350px;
+            background: #1e1e1e;
+            border-left: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+            color: white;
+        }
+
+        .code-header {
+            background: #252526;
+            padding: 15px 20px;
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-header h3 {
+            color: #cccccc;
+            font-size: 1rem;
+        }
+
+        .code-editor {
+            flex: 1;
+            padding: 20px;
+            overflow: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            background: #1e1e1e;
+        }
+
+        .code-editor:focus {
+            outline: none;
+        }
+
+        .preview-container {
+            flex: 1;
+            display: none;
+            padding: 20px;
+            overflow: auto;
+            background: white;
+        }
+
+        .preview-container.active {
+            display: block;
+        }
+
+        .tab-buttons {
+            display: flex;
+            background: #252526;
+            border-bottom: 1px solid #333;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            background: none;
+            border: none;
+            color: #cccccc;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn:hover {
+            background: #2d2d30;
+        }
+
+        .tab-btn.active {
+            background: #1e1e1e;
+            color: white;
+            border-bottom: 2px solid var(--success);
+        }
+
+        /* Export Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .modal-header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 20px;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .export-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .export-option {
+            padding: 15px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .export-option:hover {
+            border-color: var(--primary);
+            background: rgba(67, 97, 238, 0.05);
+        }
+
+        .export-option i {
+            font-size: 1.8rem;
+            color: var(--primary);
+        }
+
+        .modal-footer {
+            padding: 20px;
+            background: var(--light);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .main-content {
+                flex-direction: column;
+            }
+            .components-panel {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+            .code-panel {
+                width: 100%;
+                border-left: none;
+                border-top: 1px solid #333;
+            }
+        }
+
+        .component-properties {
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            margin-top: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .property-group {
+            margin-bottom: 15px;
+        }
+
+        .property-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: var(--dark);
+            font-size: 0.9rem;
+        }
+
+        .property-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-shapes"></i>
+                <span>GripesJS Studio</span>
+            </div>
+            <div class="controls">
+                <button class="btn btn-secondary" id="clearBtn">
+                    <i class="fas fa-trash"></i> Limpiar
+                </button>
+                <button class="btn btn-primary" id="exportBtn">
+                    <i class="fas fa-download"></i> Exportar
+                </button>
+                <button class="btn btn-secondary" id="previewBtn">
+                    <i class="fas fa-eye"></i> Vista Previa
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Components Panel -->
+            <div class="components-panel">
+                <h3 class="panel-title">Componentes</h3>
+                <div class="components-grid">
+                    <div class="component-item" data-type="header" draggable="true">
+                        <i class="fas fa-heading"></i>
+                        <span>Encabezado</span>
+                    </div>
+                    <div class="component-item" data-type="text" draggable="true">
+                        <i class="fas fa-paragraph"></i>
+                        <span>Texto</span>
+                    </div>
+                    <div class="component-item" data-type="button" draggable="true">
+                        <i class="fas fa-square"></i>
+                        <span>Botón</span>
+                    </div>
+                    <div class="component-item" data-type="image" draggable="true">
+                        <i class="fas fa-image"></i>
+                        <span>Imagen</span>
+                    </div>
+                    <div class="component-item" data-type="card" draggable="true">
+                        <i class="fas fa-id-card"></i>
+                        <span>Tarjeta</span>
+                    </div>
+                    <div class="component-item" data-type="form" draggable="true">
+                        <i class="fas fa-list-alt"></i>
+                        <span>Formulario</span>
+                    </div>
+                </div>
+
+                <!-- Component Properties -->
+                <div class="component-properties" id="propertiesPanel" style="display: none;">
+                    <h4 style="margin-bottom: 15px; color: var(--primary);">Propiedades</h4>
+                    <div class="property-group">
+                        <label>Texto</label>
+                        <input type="text" class="property-input" id="propText" data-prop="text">
+                    </div>
+                    <div class="property-group">
+                        <label>Color</label>
+                        <input type="color" class="property-input" id="propColor" data-prop="color" value="#4361ee">
+                    </div>
+                    <div class="property-group">
+                        <label>Tamaño</label>
+                        <select class="property-input" id="propSize" data-prop="size">
+                            <option value="small">Pequeño</option>
+                            <option value="medium" selected>Mediano</option>
+                            <option value="large">Grande</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Design Area -->
+            <div class="design-area-container">
+                <div class="design-area-header">
+                    <h3 style="color: var(--dark);">Área de Diseño</h3>
+                    <div style="color: var(--gray); font-size: 0.9rem;">
+                        <i class="fas fa-mouse-pointer"></i> Arrastra componentes aquí
+                    </div>
+                </div>
+                <div class="design-area" id="designArea">
+                    <div class="placeholder" id="placeholder">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <h3>Arrastra componentes aquí</h3>
+                        <p>Suelta los elementos para comenzar a diseñar</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Code Editor -->
+            <div class="code-panel">
+                <div class="tab-buttons">
+                    <button class="tab-btn active" data-tab="code">Código</button>
+                    <button class="tab-btn" data-tab="preview">Vista Previa</button>
+                </div>
+                
+                <div class="code-header">
+                    <h3>Editor de Código</h3>
+                    <button class="btn btn-primary" style="padding: 8px 15px; font-size: 0.9rem;" id="copyCodeBtn">
+                        <i class="fas fa-copy"></i> Copiar
+                    </button>
+                </div>
+                <div class="code-editor" id="codeEditor" contenteditable="true" spellcheck="false">
+&lt;!-- Código generado por GripesJS --&gt;
+&lt;div class="gripesjs-container"&gt;
+    &lt;!-- Los componentes aparecerán aquí --&gt;
+&lt;/div&gt;
+                </div>
+                <div class="preview-container" id="previewContainer">
+                    <!-- Vista previa del HTML generado -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Modal -->
+    <div class="modal" id="exportModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <i class="fas fa-download"></i> Exportar Diseño
+            </div>
+            <div class="modal-body">
+                <div class="export-options">
+                    <div class="export-option" data-export="html">
+                        <i class="fab fa-html5"></i>
+                        <div>
+                            <h4>HTML Completo</h4>
+                            <p>Exporta como archivo HTML con estilos incluidos</p>
+                        </div>
+                    </div>
+                    <div class="export-option" data-export="code">
+                        <i class="fas fa-code"></i>
+                        <div>
+                            <h4>Solo Código</h4>
+                            <p>Copia el código HTML generado</p>
+                        </div>
+                    </div>
+                    <div class="export-option" data-export="json">
+                        <i class="fas fa-database"></i>
+                        <div>
+                            <h4>JSON</h4>
+                            <p>Exporta la estructura del diseño como JSON</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="closeModalBtn">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // GripesJS Core Library
+        class GripesJS {
+            constructor() {
+                this.components = [];
+                this.selectedComponent = null;
+                this.nextId = 1;
+            }
+
+            createComponent(type, config = {}) {
+                const component = {
+                    id: `comp_${this.nextId++}`,
+                    type: type,
+                    config: {
+                        text: config.text || this.getDefaultText(type),
+                        color: config.color || '#4361ee',
+                        size: config.size || 'medium',
+                        ...config
+                    },
+                    position: config.position || { x: 0, y: 0 }
+                };
+                
+                this.components.push(component);
+                this.renderComponents();
+                return component;
+            }
+
+            getDefaultText(type) {
+                const texts = {
+                    'header': 'Encabezado Principal',
+                    'text': 'Este es un texto de ejemplo',
+                    'button': 'Haz clic aquí',
+                    'image': 'https://via.placeholder.com/300x200',
+                    'card': 'Título de la tarjeta',
+                    'form': 'Formulario de contacto'
+                };
+                return texts[type] || 'Nuevo componente';
+            }
+
+            updateComponent(id, config) {
+                const component = this.components.find(c => c.id === id);
+                if (component) {
+                    component.config = { ...component.config, ...config };
+                    this.renderComponents();
+                }
+            }
+
+            deleteComponent(id) {
+                this.components = this.components.filter(c => c.id !== id);
+                this.selectedComponent = null;
+                this.renderComponents();
+            }
+
+            selectComponent(id) {
+                this.selectedComponent = id;
+                this.renderComponents();
+            }
+
+            clearAll() {
+                this.components = [];
+                this.selectedComponent = null;
+                this.renderComponents();
+            }
+
+            getHTML() {
+                let html = `<!-- Diseño generado con GripesJS -->\n<div class="gripesjs-design">\n`;
+                
+                this.components.forEach(comp => {
+                    html += this.generateComponentHTML(comp);
+                });
+                
+                html += `</div>`;
+                return html;
+            }
+
+            generateComponentHTML(component) {
+                const styles = this.getComponentStyles(component);
+                const content = this.getComponentContent(component);
+                
+                return `  <div class="gripes-component ${component.type}" style="${styles}">
+    ${content}
+  </div>\n`;
+            }
+
+            getComponentStyles(component) {
+                const baseStyles = {
+                    header: 'font-size: 2rem; font-weight: bold;',
+                    text: 'font-size: 1rem; line-height: 1.5;',
+                    button: `background: ${component.config.color}; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;`,
+                    image: 'max-width: 100%; height: auto;',
+                    card: 'border: 1px solid #ddd; border-radius: 10px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);',
+                    form: 'display: flex; flex-direction: column; gap: 10px; padding: 20px; border: 1px solid #ddd; border-radius: 5px;'
+                };
+
+                const sizeStyles = {
+                    small: 'font-size: 0.875rem; padding: 8px 16px;',
+                    medium: 'font-size: 1rem; padding: 12px 24px;',
+                    large: 'font-size: 1.25rem; padding: 16px 32px;'
+                };
+
+                return `${baseStyles[component.type] || ''} ${sizeStyles[component.config.size] || ''}`;
+            }
+
+            getComponentContent(component) {
+                if (component.type === 'image') {
+                    return `<img src="${component.config.text}" alt="Imagen" style="max-width: 100%; height: auto;">`;
+                } else if (component.type === 'form') {
+                    return `
+        <h3>${component.config.text}</h3>
+        <input type="text" placeholder="Nombre" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+        <input type="email" placeholder="Email" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+        <textarea placeholder="Mensaje" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; height: 100px;"></textarea>
+        <button type="submit" style="background: ${component.config.color}; color: white; padding: 10px; border: none; border-radius: 4px;">Enviar</button>`;
+                } else if (component.type === 'card') {
+                    return `
+        <h3>${component.config.text}</h3>
+        <p>Este es el contenido de la tarjeta. Puedes personalizarlo según tus necesidades.</p>
+        <button style="background: ${component.config.color}; color: white; padding: 8px 16px; border: none; border-radius: 4px;">Acción</button>`;
+                } else {
+                    return component.config.text;
+                }
+            }
+
+            getJSON() {
+                return JSON.stringify({
+                    metadata: {
+                        generatedBy: 'GripesJS',
+                        timestamp: new Date().toISOString(),
+                        version: '1.0'
+                    },
+                    components: this.components
+                }, null, 2);
+            }
+
+            renderComponents() {
+                const designArea = document.getElementById('designArea');
+                const placeholder = document.getElementById('placeholder');
+                
+                // Remove existing components
+                const existingComps = designArea.querySelectorAll('.dropped-component');
+                existingComps.forEach(comp => comp.remove());
+                
+                // Show/hide placeholder
+                if (this.components.length === 0) {
+                    placeholder.style.display = 'block';
+                } else {
+                    placeholder.style.display = 'none';
+                    
+                    // Render each component
+                    this.components.forEach(comp => {
+                        const componentEl = this.createComponentElement(comp);
+                        designArea.appendChild(componentEl);
+                    });
+                }
+                
+                // Update code editor
+                this.updateCodeEditor();
+                
+                // Update properties panel
+                this.updatePropertiesPanel();
+            }
+
+            createComponentElement(component) {
+                const div = document.createElement('div');
+                div.className = `dropped-component ${component.type}`;
+                div.id = component.id;
+                div.dataset.type = component.type;
+                
+                if (this.selectedComponent === component.id) {
+                    div.classList.add('selected');
+                }
+                
+                div.innerHTML = `
+                    <div class="component-content">
+                        ${this.getComponentContent(component)}
+                    </div>
+                    <div class="component-controls">
+                        <button class="control-btn edit" onclick="gripes.selectComponent('${component.id}')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="control-btn delete" onclick="gripes.deleteComponent('${component.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                
+                // Make draggable
+                div.draggable = true;
+                div.addEventListener('dragstart', this.handleDragStart.bind(this));
+                div.addEventListener('click', (e) => {
+                    if (!e.target.closest('.component-controls')) {
+                        this.selectComponent(component.id);
+                    }
+                });
+                
+                return div;
+            }
+
+            handleDragStart(e) {
+                e.dataTransfer.setData('text/plain', e.target.id);
+            }
+
+            updateCodeEditor() {
+                const codeEditor = document.getElementById('codeEditor');
+                codeEditor.textContent = this.getHTML();
+                this.updatePreview();
+            }
+
+            updatePreview() {
+                const previewContainer = document.getElementById('previewContainer');
+                previewContainer.innerHTML = this.getHTML();
+            }
+
+            updatePropertiesPanel() {
+                const propertiesPanel = document.getElementById('propertiesPanel');
+                const component = this.components.find(c => c.id === this.selectedComponent);
+                
+                if (component) {
+                    propertiesPanel.style.display = 'block';
+                    document.getElementById('propText').value = component.config.text;
+                    document.getElementById('propColor').value = component.config.color;
+                    document.getElementById('propSize').value = component.config.size;
+                } else {
+                    propertiesPanel.style.display = 'none';
+                }
+            }
+        }
+
+        // Initialize GripesJS
+        const gripes = new GripesJS();
+
+        // DOM Elements
+        const designArea = document.getElementById('designArea');
+        const componentItems = document.querySelectorAll('.component-item');
+        const exportBtn = document.getElementById('exportBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const copyCodeBtn = document.getElementById('copyCodeBtn');
+        const previewBtn = document.getElementById('previewBtn');
+        const exportModal = document.getElementById('exportModal');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        const propertyInputs = document.querySelectorAll('.property-input');
+
+        // Event Listeners
+        componentItems.forEach(item => {
+            item.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('text/plain', e.target.dataset.type);
+                e.dataTransfer.effectAllowed = 'copy';
+            });
+        });
+
+        designArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            designArea.classList.add('drag-over');
+            e.dataTransfer.dropEffect = 'copy';
+        });
+
+        designArea.addEventListener('dragleave', () => {
+            designArea.classList.remove('drag-over');
+        });
+
+        designArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            designArea.classList.remove('drag-over');
+            
+            const type = e.dataTransfer.getData('text/plain');
+            if (type) {
+                const rect = designArea.getBoundingClientRect();
+                const x = e.clientX - rect.left - 50;
+                const y = e.clientY - rect.top - 50;
+                
+                gripes.createComponent(type, {
+                    position: { x, y }
+                });
+            }
+        });
+
+        // Property changes
+        propertyInputs.forEach(input => {
+            input.addEventListener('change', (e) => {
+                if (gripes.selectedComponent) {
+                    const prop = e.target.dataset.prop;
+                    const value = e.target.value;
+                    
+                    gripes.updateComponent(gripes.selectedComponent, {
+                        [prop]: value
+                    });
+                }
+            });
+        });
+
+        // Export functionality
+        exportBtn.addEventListener('click', () => {
+            exportModal.classList.add('active');
+        });
+
+        closeModalBtn.addEventListener('click', () => {
+            exportModal.classList.remove('active');
+        });
+
+        exportModal.addEventListener('click', (e) => {
+            if (e.target === exportModal) {
+                exportModal.classList.remove('active');
+            }
+        });
+
+        document.querySelectorAll('.export-option').forEach(option => {
+            option.addEventListener('click', (e) => {
+                const type = e.currentTarget.dataset.export;
+                
+                switch(type) {
+                    case 'html':
+                        exportAsHTML();
+                        break;
+                    case 'code':
+                        copyCodeToClipboard();
+                        break;
+                    case 'json':
+                        exportAsJSON();
+                        break;
+                }
+                
+                exportModal.classList.remove('active');
+            });
+        });
+
+        function exportAsHTML() {
+            const html = gripes.getHTML();
+            const fullHTML = `<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diseño GripesJS</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 20px; 
+            background: #f5f7fb; 
+        }
+        .gripesjs-design { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 20px; 
+        }
+        .gripes-component { 
+            margin-bottom: 20px; 
+            transition: all 0.3s ease; 
+        }
+    </style>
+</head>
+<body>
+${html}
+</body>
+</html>`;
+
+            downloadFile(fullHTML, 'diseno-gripesjs.html', 'text/html');
+        }
+
+        function copyCodeToClipboard() {
+            const code = gripes.getHTML();
+            navigator.clipboard.writeText(code).then(() => {
+                alert('Código copiado al portapapeles!');
+            });
+        }
+
+        function exportAsJSON() {
+            const json = gripes.getJSON();
+            downloadFile(json, 'diseno-gripesjs.json', 'application/json');
+        }
+
+        function downloadFile(content, filename, mimeType) {
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Clear all components
+        clearBtn.addEventListener('click', () => {
+            if (confirm('¿Estás seguro de que quieres eliminar todos los componentes?')) {
+                gripes.clearAll();
+            }
+        });
+
+        // Copy code button
+        copyCodeBtn.addEventListener('click', copyCodeToClipboard);
+
+        // Preview button
+        previewBtn.addEventListener('click', () => {
+            const previewTab = document.querySelector('[data-tab="preview"]');
+            previewTab.click();
+        });
+
+        // Tab switching
+        tabButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tab = btn.dataset.tab;
+                
+                // Update active tab
+                tabButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                // Show corresponding content
+                if (tab === 'code') {
+                    document.getElementById('codeEditor').style.display = 'block';
+                    document.getElementById('previewContainer').style.display = 'none';
+                } else {
+                    document.getElementById('codeEditor').style.display = 'none';
+                    document.getElementById('previewContainer').style.display = 'block';
+                    gripes.updatePreview();
+                }
+            });
+        });
+
+        // Code editor live update
+        document.getElementById('codeEditor').addEventListener('input', (e) => {
+            const previewContainer = document.getElementById('previewContainer');
+            try {
+                previewContainer.innerHTML = e.target.textContent;
+            } catch (error) {
+                console.error('Error en el código HTML:', error);
+            }
+        });
+
+        // Initialize with some sample components
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                gripes.createComponent('header', { 
+                    text: 'Bienvenido a GripesJS',
+                    color: '#4361ee',
+                    size: 'large'
+                });
+                
+                gripes.createComponent('text', {
+                    text: 'Arrastra y suelta componentes para crear tu diseño. Luego exporta el código HTML listo para usar.',
+                    color: '#333',
+                    size: 'medium'
+                });
+                
+                gripes.createComponent('button', {
+                    text: 'Comenzar',
+                    color: '#7209b7',
+                    size: 'medium'
+                });
+            }, 500);
+        });
+
+        // Make gripes available globally
+        window.gripes = gripes;
+    </script>
+</body>
+</html>
