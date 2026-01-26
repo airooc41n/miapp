@@ -1,0 +1,30 @@
+Analiza el código que te comparto y procede únicamente con los cambios que te voy a proponer sin cambiar 
+nada más que lo estrictamente necesario y manteniendo en todo momento la consistencia de la aplicacion
+
+Modificaciones 
+
+1.- Sólamente haremos cambios sobre las páginas que nombrará a continuación y ninguna más se tocará a excepción del js o css que compartan y sea necesario modificar para la nueva funcionalidad garantizando sirmpre la consistencia y funcionamiento de toda la aplicación
+
+2.- Página "miestablecimiento":
+
+Actualmente tenemos un título "Mi Establecimiento" que no cambiará
+
+Tenemos un div mi-establecimiento-form que debe ocultarse después de que hagamos login con éxito
+
+Tenemos un div est-panel que incluirá, sin tocar nada de lo actual, un botón "Escanear QR" al lado del
+botón "Cerrar Sesión"
+
+Justo debajo vamos a cambiar el div scan-container actual por la funcionalidad que traemos del fichero adjunto jsQR-Scan-v0.2.html pero cambiando que ahora el botón "Escanear QR" lo hemos puesto arriba, al lado del botón "Cerrar sesión".
+Cuando pulsemos el botón "Escanear QR" se desarrollará en un div creado para ello la funcionalidad de lectura del QR del fichero adjunto jsQR-Scan-v0.2.html, sustituyéndola por la actual, menos la funcionalidad que se desarrolla tras pulsar el botón verde circular de "Sellar" que sigue escribiendo en la tabla "Sello" el ID del pasaporte y el ID del establecimiento como antes, para que la funcion de sellado del pasaporte siga funcionando convenientemente. 
+
+3.- Página "Admin"
+
+La funcionalidad de importar DB debe hacer que cuando importemos un JSON (backup DB) analice los ID de las tablas de los registros que ya existen para permitir que no sean borrados, sino que se haga una mezcla de la
+db actual en localStorage con la nueva db que importamos. De existir registros con ID repetidos prevalecerán los más nuevos, es decir, los que trae el json que importamos.
+
+En la parte que se muestran los establecimientos, donde están los iconos de ojo necesito que nos lleven,
+cuando pulsamos sobre cada registro de establecimiento (al igual que los de pasaporte) a la página
+"Mi establecimiento" con el establecimiento ya logueado para ver los datos del establecimiento al que llamamos (cuando llamamos desde admin directamente no necesitamos pasar el login)
+
+4.- Hazme las preguntas necesarias antes de modificar nada, para que quede todo claro
+ 
