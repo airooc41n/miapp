@@ -1,0 +1,21 @@
+Analiza el código que te comparto y procede únicamente con los cambios que te voy a proponer sin cambiar 
+nada más que lo estrictamente necesario y manteniendo en todo momento la consistencia de la aplicacion
+
+Modificaciones 
+
+1.- Sólamente haremos cambios sobre las páginas que nombrará a continuación y ninguna más se tocará a excepción del js o css que compartan y sea necesario modificar para la nueva funcionalidad garantizando sirmpre la consistencia y funcionamiento de toda la aplicación
+
+2.- Página "miestablecimiento":
+El div mi-establecimiento-form debe ocultarse (display:none;) después de que hagamos login exitosamente
+
+3.- Página "Admin"
+La funcionalidad de importar DB debe hacer que cuando importemos un JSON (backup DB) analice los ID de las tablas de los registros que ya existen para permitir que no sean borrados, sino que se haga una mezcla de la
+db actual en localStorage con la nueva db que importamos. De existir registros con ID repetidos prevalecerán los más nuevos, es decir, los que trae el json que importamos.
+Incluir en el menú contextual en página "Admin" un nuevo item "Papelera" para Resetear todo el localStorage y que se reactualice por defecto.
+
+4.- Menú principal y contextual:
+Cuando se activa en cualquier página el menú contextual (el de los tres puntitos en footer) y hacemos click fuera de él para que se oculte, se muestra el menú principal
+(el del header) y no debería. Son menús independientes; el principal sale como siempre de derecha a izquierda y el contextual sale de abajo a arriba (de ocultarse al pulsar afuera sin que se despliegue el principal)
+
+5.- Hazme las preguntas necesarias antes de modificar nada, para que quede todo claro
+ 
