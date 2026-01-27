@@ -1,0 +1,21 @@
+Analiza y entiende el código que te comparto y procede únicamente con los cambios que te voy a proponer sin cambiar nada más que lo estrictamente necesario y manteniendo en todo momento la consistencia de la aplicación devolviendo todo el código en un único fichero html
+
+Modificaciones 
+
+1.- Sólamente haremos cambios sobre las páginas que nombraré a continuación y ninguna más se tocará a excepción del js o css que compartan y sea necesario modificar para la nueva funcionalidad solicitada garantizando sirmpre la consistencia y funcionamiento de toda la aplicación
+
+2.- Diseño (CSS) del sitio completo
+Propón una mejor y más moderna alternativa para este sitio que sea más parecida a una aplicación 
+nativa de móvil, aunque siga siendo una Web App One Page como hasta ahora.
+Propón cambios de estilo para Header y Footer, área de contenido de todas las páginas, puedes poner 
+iconos en marca de agua en grade como fondo según la temática de cada página, o lo que prefieras para
+darle un bonito cambio más vendible e intuitivo a la vez que moderno.
+Fuentes, paleta de colores, iconos, icono hamburguer más moderno, modo claro/oscuro, efectos, sombreados... todo los que se te ocurra que esté más normalizado en las aplicaciones en 2025/26
+
+3.- Página "Admin"
+Haz que las tablas actuales que se muestran en el Admin; pasaporte, establecimiento y sello 
+sean ordenables por cada campo (ya sabes, enlace en nombre de campo para ordenar por cada campo
+de las tablas)
+
+4.- Recuerda que debes mantener intacto el resto de partes de la aplicación sobre las que no 
+hayamos propuesto ningún cambio. Hazme las preguntas que consideres necesarias antes de modificar nada, para que quede todo claro antes de realizar los cambios
