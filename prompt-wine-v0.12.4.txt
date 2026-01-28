@@ -1,0 +1,18 @@
+Analiza y entiende en profundidad el código que te comparto y procede únicamente con los cambios que te voy a proponer sin cambiar nada más que lo estrictamente necesario y manteniendo en todo momento la consistencia de la aplicación devolviendo todo el código en un único fichero html
+
+Modificaciones 
+
+1.- Sólamente haremos cambios sobre las páginas que nombraré a continuación y ninguna más se tocará a excepción del código HTML,JS o CSS (HTML5) que compartan y sea necesario modificar para la nueva funcionalidad solicitada garantizando sirmpre la consistencia y funcionamiento de toda la aplicación.
+
+2.- Página Registrar Pasaporte:
+Incluye en el formulario de registro de pasaporte justo antes de "No soy un robot" dos campos de tipo checkbox:
+
+uno llamado "He leído y acepto las condiciones de registro" que será obligatorio y que se guardará en la tabla (localStorage) Pasaporte con el campo "Acepta_condiciones" y el valor 1. Aparecerá checkado por defecto
+
+el otro se llamará "Suscripción Newsletter", este no será obligatorio. Se guardará en tabla Pasaporte con el campo "Suscripcion", los valores serán 1 para checkeado y 0 para no checkeado. Aparecerá checkeado por defecto también
+
+3.- Formularios con checkbox "no soy un robot" 
+Propón un nuevo diseño (que no afecte a la funcionalidad) para los checkbox "No soy un robot" de todos los formularios donde se usa que se parezca al reCaptcha de Google (que simule un recaptcha, pero no hace falta integrar ninguno, sólo que el campo sea obligatorio para para pasar el form) 
+
+
+* Recuerda que debes mantener intacto el resto de partes de la aplicación sobre las que no hayamos propuesto ningún cambio. Hazme las preguntas que consideres necesarias antes de modificar nada identificándolas con un número para poder hacer referencia a ellas al responder, para que quede todo claro antes de realizar los cambios necesarios.
