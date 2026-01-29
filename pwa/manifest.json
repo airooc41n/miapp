@@ -7,12 +7,12 @@
   "theme_color": "#8B1E3F",
   "icons": [
     {
-      "src": "/icon-pasaporte-digital-vino.png",
+      "src": "https://airooc41n.github.io/miapp/pwa/icon-pasaporte-digital-vino.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "/icon-pasaporte-digital-vino.png",
+      "src": "https://airooc41n.github.io/miapp/pwa/icon-pasaporte-digital-vino.png",
       "type": "image/png",
       "sizes": "512x512"
     }
