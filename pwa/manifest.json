@@ -1,0 +1,24 @@
+{
+  "name": "Pasaporte del Vino",
+  "short_name": "VinoApp",
+  "description": "Tu pasaporte digital para las rutas del vino de Valladolid",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#5e0b15",
+  "theme_color": "#8B1E3F",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://airooc41n.github.io/miapp/pwa/icon-pasaporte-digital-vino.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://airooc41n.github.io/miapp/pwa/icon-pasaporte-digital-vino.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any"
+    }
+  ]
+}
