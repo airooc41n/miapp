@@ -1,18 +1,18 @@
 {
   "name": "Pasaporte del Vino",
-  "short_name": "VinoApp",
+  "short_name": "PstVinoApp",
   "start_url": "index.html",
   "display": "standalone",
   "background_color": "#5e0b15",
   "theme_color": "#8B1E3F",
   "icons": [
     {
-      "src": "./icon-pasaporte-digital-vino.png",
+      "src": "/icon-pasaporte-digital-vino.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "./icon-pasaporte-digital-vino.png",
+      "src": "/icon-pasaporte-digital-vino.png",
       "type": "image/png",
       "sizes": "512x512"
     }
