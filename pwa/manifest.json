@@ -7,12 +7,12 @@
   "theme_color": "#8B1E3F",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/763/763061.png",
+      "src": "./icon-pasaporte-digital-vino.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/763/763061.png",
+      "src": "./icon-pasaporte-digital-vino.png",
       "type": "image/png",
       "sizes": "512x512"
     }
