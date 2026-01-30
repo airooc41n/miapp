@@ -1,6 +1,6 @@
 {
   "name": "Pasaporte del Vino",
-  "short_name": "VinoApp",
+  "short_name": "PasaporteVinoApp",
   "description": "Tu pasaporte digital para las rutas del vino de Valladolid",
   "start_url": "index.html",
   "display": "standalone",
