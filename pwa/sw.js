@@ -1,4 +1,4 @@
-const CACHE_NAME = 'vino-cache-v2';
+const CACHE_NAME = 'vino-cache-v1.1';
 const assets = [
   'index.html',
   'manifest.json',
