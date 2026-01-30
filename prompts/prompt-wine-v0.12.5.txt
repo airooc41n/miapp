@@ -1,0 +1,34 @@
+Analiza y entiende en profundidad el código que te comparto y procede únicamente con los cambios que te voy a proponer sin cambiar nada más que lo estrictamente necesario y manteniendo en todo momento la consistencia de la aplicación devolviendo todo el código en un único fichero html
+
+Modificaciones i
+
+1.- Sólamente haremos cambios sobre las páginas que nombraré a continuación y ninguna más se tocará a excepción del código HTML,JS o CSS (HTML5) que compartan y sea necesario modificar para la nueva funcionalidad solicitada garantizando siempre la consistencia y funcionamiento de toda la aplicación.
+
+2.- Si analizas la imagen app.jpg puedes comprobar que aparece la imagen de un movil con una aplicación muy similar a la que tenemos en wine-v0.12.4_G.html. En el pie de página vemos que tiene un footer con 5 iconos con sus textos debajo. Necesito modificar de la manera que voy a proponer a continuación nuestra aplicación wine-v0.12.4_G.html (en adelante wineApp):
+
+Ahora
+En wineApp puedes comprobar que tenemos un menu principal en el header con los items: Registrar pasaporte, Mi pasaporte, Establecimientos, Mi establecimiento y Admin. 
+En wineApp puedes comprobar igualmente, que tenemos un menú contextual de página en el footer con items que llevan a diferentes páginas o funciones.
+
+Después
+Lo que se pretende es modificar los dos menús:
+El menú contextual de página (footer) pasará a ser el principal en header con los mismos items que tuviera en cada página en que nos encontrábamos y cambiando el icono de hamburguer al de tres puntitos. Es decir, que en el header tendremos los menús contextuales con el icono a la derecha como ahora con sus tres puntitos.
+Quita los items Configuración y Ayuda de todos los menús contextuales de página y deja los de Términos y condiciones. 
+El menú contextual de la página Admin mantiene todos los items de su menú contextual como los tiene quitando como he dicho antes Configuración y Ayuda, que como sabes ahora serán accesibles desde los tres puntitos en header.
+Mantiene su condición de menú en offset que hace un fade desde la derecha...
+
+El menú principal desaparece y se crea en el footer un menú con cinco iconos, similar a como se muestra en la imagen app.jpg, pero incluyendo los que te voy a decir a continuación
+
+De izquierda a derecha, centrados y espaciados equivalentemente:
+Icono de + con texto Registrar: nos lle lleva a la página Registrar pasaporte
+Icono de libro con texto Mi pasaporte: nos lleva a página Mi pasaporte
+Icono de Tienda con texto Establecimientos: nos lleva a página Establecimientos
+Icono de Tienda diferente anterior con texto Mi Establecimiento: lleva a Mi establecimiento
+Icono de Rueda de engranage con Texto Admin: nos lleva la página Admin
+
+Página de Inicio:
+Poner link en el Titulo del Header y en icono de botella para llevarnos al inicio
+Incluir también item inicio en todos los menús contextuales de paǵina abajo
+
+Haz un resumen de todo lo que has entendido y más a proceder a modificar
+Haz las preguntas necesarias, identificándolas con un número para poder responderte

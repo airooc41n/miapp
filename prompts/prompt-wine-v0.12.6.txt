@@ -1,0 +1,16 @@
+Analiza y entiende en profundidad el código que te comparto y procede únicamente con los cambios que te voy a proponer sin cambiar nada más que lo estrictamente necesario y manteniendo en todo momento la consistencia de la aplicación devolviendo todo el código en un único fichero html
+
+Modificaciones
+
+1.- Sólamente haremos cambios sobre las páginas que nombraré a continuación y ninguna más se tocará a excepción del código HTML,JS o CSS (HTML5) que compartan y sea necesario modificar para la nueva funcionalidad solicitada garantizando siempre la consistencia y funcionamiento de toda la aplicación.
+
+2.- Te adjunto todo el código en wine-v0.12.5.html (en adelante wineApp):
+
+3.- Si analizas la página de Admin, puedes comprobar que el menú contextual (el que tenemos en el header con icono tres puntitos) se carga con las opciones de la página de Admin.
+Sucede que cuando elegimos uno, por ejemplo, Estadísticas, nos lleva perfectamente pero cuando volvemos a acceder, estando en esta página, ahora Estadisticas, el menú contextual no es el de la página Admin.
+
+Entendiendo que los items del menú contextual de la página Admin que nos llevan a páginas deberían ser subpáginas de Admin, propón una solución que corrija este hecho, es decir, que habiendo entrado en Admin y pulsado el menú contextual, si hemos elegido Estadísticas o Alta establecimiento el menú contextual a presentar debería ser el mismo que el de página Admin para que la usabilidad y la lógica intuitiva del usuario tenga esa continuidad lógica.  
+
+
+Haz un resumen de todo lo que has entendido antes de proceder a modificar
+Haz las preguntas necesarias, identificándolas con un número para poder responderte
