@@ -1,1 +1,20 @@
 
+email,passwd,type,localidad,direccion,tlf,nombre,descripcion,fecha_alta
+info@museopatioherreriano.es,.,museo,Valladolid,C/ Jorge Guillén 22,983362908,Museo Patio Herreriano,Museo de arte contemporáneo español en un antiguo monasterio con exposiciones temporales y permanentes.,2026-01-01 00:00:00
+reservas@casalope.es,.,restaurante,Valladolid,Plaza de San Miguel 10,983370874,Casa Lope,Restaurante tradicional con cocina castellana, especialidades en asados y tapas creativas.,2026-01-02 00:00:00
+visitas@bodegascuneo.es,.,bodega,Peñafiel,Ctra. Valladolid s/n,983880763,Bodegas Cuñeo,Bodega familiar en la Ribera del Duero con visitas guiadas y catas de vinos tintos premiados.,2026-01-03 00:00:00
+tienda@vinotecalacava.es,.,vinoteca,Medina del Campo,C/ Padilla 5,983812345,Vinoteca La Cava,Tienda especializada en vinos de la región con selección de DO Rueda y accesorios para enófilos.,2026-01-04 00:00:00
+info@museofabio.es,.,museo,Valladolid,C/ Cadenas de San Gregorio 2,983250375,Museo Nacional de Escultura,Museo con colección de escultura religiosa del Renacimiento y Barroco en un palacio histórico.,2026-01-05 00:00:00
+reservas@elcaballo.es,.,restaurante,Tordesillas,Av. Valladolid 26,983771091,Restaurante El Caballo de Troya,Restaurante con menús de degustación inspirados en la historia local y productos de temporada.,2026-01-06 00:00:00
+visitas@bodegasprotos.es,.,bodega,Peñafiel,Av. Bodegas Protos s/n,983878011,Bodegas Protos,Bodega icónica con arquitectura moderna, catas y tours por viñedos de Ribera del Duero.,2026-01-07 00:00:00
+tienda@vinotecaelcorcho.es,.,vinoteca,Valladolid,C/ Macías Picavea 7,983307654,Vinoteca El Corcho,Amplia selección de vinos nacionales e internacionales con eventos de cata semanales.,2026-01-08 00:00:00
+info@museocienciavalladolid.es,.,museo,Valladolid,Av. Salamanca s/n,983144300,Museo de la Ciencia de Valladolid,Museo interactivo con planetario, exposiciones de ciencia y tecnología para todas las edades.,2026-01-09 00:00:00
+reservas@lamarquesina.es,.,restaurante,Medina de Rioseco,Plaza Mayor 1,983700345,Restaurante La Marquesina,Cocina fusión con influencias locales, terraza en plaza histórica y vinos de la tierra.,2026-01-10 00:00:00
+visitas@bodegasvega.es,.,bodega,Quintanilla de Onésimo,Ctra. Madrid-Valladolid km 163,983680147,Bodegas Vega Sicilia,Bodega legendaria productora de vinos premium con visitas exclusivas por reserva.,2026-01-11 00:00:00
+tienda@vinotecarueda.es,.,vinoteca,Rueda,C/ Real 12,983868001,Vinoteca Rueda,Especializada en vinos blancos de DO Rueda, con quesos y embutidos locales.,2026-01-12 00:00:00
+info@museofalvar.es,.,museo,Íscar,C/ del Castillo s/n,983612003,Museo del Castillo de Íscar,Castillo medieval con museo de historia local y vistas panorámicas de la comarca.,2026-01-13 00:00:00
+reservas@elmeson.es,.,restaurante,Olmedo,Plaza Mayor 18,983600012,El Mesón de la Villa,Restaurante rústico con lechazo asado y platos de caza en ambiente histórico.,2026-01-14 00:00:00
+visitas@bodegasemilio.es,.,bodega,Roales de Campos,C/ Bodegas 3,983724567,Bodegas Emilio Moro,Bodega con vinos expresivos de Tempranillo, catas y experiencias enoturísticas.,2026-01-15 00:00:00
+tienda@vinotecadelduero.es,.,vinoteca,Peñafiel,C/ Derecha al Coso 59,983880102,Vinoteca del Duero,Selección de vinos de Ribera del Duero con catas guiadas y productos gourmet.,2026-01-16 00:00:00
+info@museosemanasanta.es,.,museo,Medina de Rioseco,C/ San Juan 20,983700001,Museo de Semana Santa,Museo dedicado a la Semana Santa con pasos procesionales y arte sacro.,2026-01-17 00:00:00
+reservas@asadorlaparrilla.es,.,restaurante,La Parrilla,C/ Mayor 4,983682345,Asador La Parrilla,Especializado en carnes a la parrilla con vinos locales en un entorno rural.,2026-01-18 00:00:00
